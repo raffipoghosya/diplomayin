@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viva Armenia — Strategic Financial Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#E3000F;--red-hover:#C5000D;--red-glow:rgba(227,0,15,0.15);--navy:#1A1C2C;--navy-light:#252840;--bg:#F0F2F5;--card:rgba(255,255,255,0.82);--card-solid:#fff;--green:#2ECC71;--green-bg:rgba(46,204,113,0.1);--green-glow:rgba(46,204,113,0.18);--blue:#3B82F6;--blue-bg:rgba(59,130,246,0.08);--amber:#F59E0B;--amber-bg:rgba(245,158,11,0.08);--text:#1A1C2C;--text-sec:#6B7280;--border:#E5E7EB;--shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);--shadow-lg:0 8px 32px rgba(0,0,0,0.08);--shadow-color:0 4px 20px rgba(227,0,15,0.08);--radius:16px;--radius-sm:10px;--sidebar-w:264px;--font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Armenian',sans-serif}
+body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;line-height:1.6}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;z-index:10}
+.sidebar-brand{padding:26px 22px 22px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-brand .logo-row{display:flex;align-items:center;gap:11px;margin-bottom:5px}
+.logo-dot{width:34px;height:34px;background:linear-gradient(135deg,#E3000F,#FF4136);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;box-shadow:0 2px 10px rgba(227,0,15,0.35)}
+.sidebar-brand h2{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+.sidebar-brand p{font-size:10.5px;color:rgba(255,255,255,0.35);margin-top:3px;letter-spacing:0.5px;text-transform:uppercase}
+.sidebar-nav{padding:14px 10px;flex:1}
+.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.25);padding:10px 14px 6px;font-weight:600}
+.nav-btn{display:flex;align-items:center;gap:11px;width:100%;background:none;border:none;padding:11px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.25s ease;text-align:left;font-family:var(--font);margin-bottom:2px}
+.nav-btn svg{width:18px;height:18px;opacity:0.5;flex-shrink:0;transition:all 0.25s}
+.nav-btn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
+.nav-btn:hover svg{opacity:0.85}
+.nav-btn.active{background:rgba(227,0,15,0.1);color:#fff;box-shadow:inset 3px 0 0 var(--red)}
+.nav-btn.active svg{opacity:1;color:#FF6B6B}
+.sidebar-footer{padding:18px 22px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:rgba(255,255,255,0.28);line-height:1.7}
+.main-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.top-bar{background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.top-bar h1{font-size:18px;font-weight:700;letter-spacing:-0.4px}
+.top-bar-right{display:flex;align-items:center;gap:14px}
+.badge{background:var(--red);color:#fff;padding:4px 13px;border-radius:20px;font-size:10.5px;font-weight:700}
+.lang-switch{display:flex;background:var(--bg);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border)}
+.lang-btn{padding:5px 12px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);background:transparent;color:var(--text-sec);transition:all 0.2s ease}
+.lang-btn:hover{color:var(--text)}
+.lang-btn.active{background:var(--card-solid);color:var(--red);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.content-scroll{flex:1;overflow-y:auto;padding:24px 34px 40px}
+.tab-panel{display:none;animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)}.tab-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
+.kpi-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.6);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);transition:all 0.3s ease;position:relative;overflow:hidden}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--border),transparent);transition:background 0.4s}
+.kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+.kpi-card:hover::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
+.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-sec);font-weight:600;margin-bottom:8px}
+.kpi-value{font-size:28px;font-weight:800;letter-spacing:-1.2px;color:var(--text);line-height:1.1}
+.kpi-sub{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11.5px;font-weight:600;color:var(--green)}
+.kpi-sub .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--green-bg);font-size:10px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);transition:all 0.3s ease}
+.card:hover{box-shadow:var(--shadow-lg)}.card.span-2{grid-column:span 2}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.card-hdr h3{font-size:14.5px;font-weight:700}.card-tag{font-size:10px;text-transform:uppercase;letter-spacing:0.6px;padding:4px 10px;border-radius:6px;font-weight:600;background:var(--bg);color:var(--text-sec)}
+.fg{margin-bottom:16px}.fg label{display:block;margin-bottom:5px;font-size:12px;font-weight:600}.fg label span{color:var(--text-sec);font-weight:400}
+.fc{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:var(--font);background:rgba(255,255,255,0.9);color:var(--text);transition:all 0.2s;-webkit-appearance:none}
+.fc:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
+select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
+.slider-row{display:flex;align-items:center;gap:12px}
+.slider-row input[type="range"]{flex:1;height:5px;-webkit-appearance:none;background:linear-gradient(90deg,var(--red),#FF6B6B);border-radius:3px;outline:none}
+.slider-row input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--red);cursor:pointer;box-shadow:0 1px 6px rgba(227,0,15,0.3);transition:transform 0.15s}
+.slider-row input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.slider-val{min-width:44px;text-align:center;font-weight:700;font-size:13px;color:var(--red);background:var(--red-glow);padding:4px 10px;border-radius:6px}
+.result-box{background:linear-gradient(135deg,rgba(46,204,113,0.06),rgba(46,204,113,0.02));border:1px solid rgba(46,204,113,0.18);border-radius:var(--radius-sm);padding:16px 18px;margin-top:14px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px}.result-row strong{font-weight:700;font-size:14.5px}
+.btn-primary{width:100%;padding:11px;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,#E3000F,#FF4136);color:#fff;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all 0.3s ease;margin-top:12px}
+.btn-primary:hover:not(:disabled){box-shadow:0 4px 18px rgba(227,0,15,0.35);transform:translateY(-1px)}
+.btn-primary:disabled{background:var(--bg);color:#aaa;cursor:not-allowed;border:1px solid var(--border);box-shadow:none;transform:none}
+.chart-wrap{position:relative;height:310px;width:100%}
+.chat-container{display:flex;flex-direction:column;height:380px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:#FAFBFC}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:82%;padding:11px 15px;border-radius:16px;font-size:12.5px;line-height:1.55;animation:fadeUp 0.25s ease}
+.chat-msg.bot{background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px;align-self:flex-start}
+.chat-msg.user{background:var(--navy);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.chat-msg.typing{color:var(--text-sec);font-style:italic;letter-spacing:4px;font-size:18px}
+.chat-chips{display:flex;gap:6px;padding:8px 14px;flex-wrap:wrap;border-top:1px solid var(--border);background:rgba(255,255,255,0.6)}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-size:11px;font-weight:600;cursor:pointer;background:#fff;color:var(--text-sec);font-family:var(--font);transition:all 0.2s}
+.chip:hover{border-color:var(--red);color:var(--red);background:rgba(227,0,15,0.04)}
+.chat-input-row{display:flex;border-top:1px solid var(--border);background:#fff}
+.chat-input-row input{flex:1;border:none;padding:13px 16px;font-size:12.5px;font-family:var(--font);outline:none}
+.chat-input-row button{padding:0 20px;border:none;background:var(--navy);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:var(--font);transition:background 0.2s}
+.chat-input-row button:hover{background:var(--red)}
+.esg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.esg-item{text-align:center;padding:20px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.3s ease;background:rgba(255,255,255,0.5)}
+.esg-item:hover{border-color:var(--green);box-shadow:0 4px 16px var(--green-glow);transform:translateY(-2px)}
+.esg-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px}
+.esg-val{font-size:22px;font-weight:800;margin-bottom:3px}.esg-lbl{font-size:11px;color:var(--text-sec);line-height:1.4}
+.esg-info{margin-top:16px;padding:14px 16px;background:var(--bg);border-radius:var(--radius-sm);font-size:12px;color:var(--text-sec);line-height:1.65}.esg-info strong{color:var(--text)}
+.comp-table{width:100%;border-collapse:separate;border-spacing:0}
+.comp-table thead th{padding:13px 18px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-sec);font-weight:700;background:var(--bg);border-bottom:2px solid var(--border)}
+.comp-table thead th:first-child{border-radius:var(--radius-sm) 0 0 0}.comp-table thead th:last-child{border-radius:0 var(--radius-sm) 0 0}
+.comp-table tbody td{padding:14px 18px;font-size:13.5px;border-bottom:1px solid var(--border);transition:all 0.2s}
+.comp-table tbody tr:last-child td{border-bottom:none}.comp-table tbody tr:hover{background:rgba(227,0,15,0.015)}
+.comp-table .metric-name{font-weight:600}.comp-table .val-credit{color:var(--text-sec)}.comp-table .val-leasing{font-weight:700;color:var(--green)}
+.winner{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;background:var(--green-bg);color:#27AE60}
+.winner-row td:first-child{border-left:3px solid var(--green)}
+.sens-table{width:100%;border-collapse:collapse;margin-top:16px}
+.sens-table th,.sens-table td{padding:10px 14px;text-align:center;font-size:12.5px;border:1px solid var(--border)}
+.sens-table th{background:var(--navy);color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
+.sens-table .base-col{background:rgba(227,0,15,0.05);font-weight:700}.sens-table .pos{color:var(--green);font-weight:600}.sens-table .neg{color:var(--red);font-weight:600}
+.vat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.vat-item{padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;transition:all 0.3s;background:rgba(255,255,255,0.6)}
+.vat-item:hover{border-color:var(--red);box-shadow:var(--shadow-color)}
+.vat-name{font-size:11.5px;color:var(--text-sec);margin-bottom:5px;font-weight:500}.vat-val{font-size:21px;font-weight:800}.vat-unit{font-size:10.5px;color:var(--text-sec);margin-top:2px}
+.vat-total{margin-top:16px;padding:18px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;display:flex;justify-content:space-between;align-items:center}
+.vat-total-label{font-size:12.5px;font-weight:600;opacity:0.8}.vat-total-val{font-size:24px;font-weight:800}
+.code-editor{background:#1E1E2E;border-radius:var(--radius);overflow:hidden;border:1px solid #313244;box-shadow:var(--shadow-lg)}
+.code-titlebar{display:flex;align-items:center;gap:7px;padding:11px 16px;background:#181825;border-bottom:1px solid #313244}
+.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#F38BA8}.code-dot.y{background:#F9E2AF}.code-dot.g{background:#A6E3A1}
+.code-titlebar span{margin-left:10px;font-size:11.5px;color:#6C7086;font-weight:500}
+.code-body{padding:20px;overflow-x:auto;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:12.5px;line-height:1.8;color:#CDD6F4;counter-reset:line}
+.code-body .line{display:block;padding-left:45px;position:relative;white-space:pre}
+.code-body .line::before{counter-increment:line;content:counter(line);position:absolute;left:0;width:30px;text-align:right;color:#45475A;font-size:11px}
+.kw{color:#CBA6F7}.fn{color:#89B4FA}.st{color:#A6E3A1}.nm{color:#FAB387}.cm{color:#6C7086;font-style:italic}.op{color:#89DCEB}.vr{color:#F9E2AF}
+.flow-diagram{display:flex;align-items:center;justify-content:center;gap:0;margin:24px 0 8px;flex-wrap:wrap}
+.flow-step{display:flex;flex-direction:column;align-items:center;padding:16px 20px;border-radius:var(--radius-sm);min-width:130px;text-align:center;transition:all 0.3s}
+.flow-step:hover{transform:translateY(-3px)}.flow-step .flow-icon{font-size:26px;margin-bottom:8px}.flow-step .flow-title{font-size:12px;font-weight:700;margin-bottom:2px}.flow-step .flow-desc{font-size:10px;color:var(--text-sec)}
+.flow-step.s1{background:var(--blue-bg);border:1px solid rgba(59,130,246,0.2)}
+.flow-step.s2{background:var(--amber-bg);border:1px solid rgba(245,158,11,0.2)}
+.flow-step.s3{background:var(--green-bg);border:1px solid rgba(46,204,113,0.2)}
+.flow-step.s4{background:var(--red-glow);border:1px solid rgba(227,0,15,0.15)}
+.flow-arrow{font-size:20px;color:var(--text-sec);margin:0 6px}
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.tech-card{padding:20px;border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;transition:all 0.3s}
+.tech-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-2px)}
+.tech-card .tc-icon{font-size:26px;margin-bottom:8px}.tech-card h4{font-size:13px;font-weight:700;margin-bottom:4px}.tech-card p{font-size:11.5px;color:var(--text-sec);line-height:1.5}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+<div class="sidebar-brand">
+<div class="logo-row"><div class="logo-dot">V</div><h2>Viva Armenia</h2></div>
+<p data-i18n="brandSub">Strategic Dashboard</p>
+</div>
+<nav class="sidebar-nav">
+<div class="nav-label" data-i18n="navLabel">Analytics</div>
+<button class="nav-btn active" data-tab="tab1">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+<span data-i18n="nav1">Executive Dashboard</span></button>
+<button class="nav-btn" data-tab="tab2">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+<span data-i18n="nav2">Financial Analytics</span></button>
+<button class="nav-btn" data-tab="tab3">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+<span data-i18n="nav3">Tech &amp; Algorithms</span></button>
+</nav>
+<div class="sidebar-footer" data-i18n="footer">Master&rsquo;s Thesis &mdash; Economics<br>Raffi Poghosyan &bull; NPUA 2026</div>
+</aside>
+<div class="main-wrapper">
+<header class="top-bar">
+<h1 data-i18n="topTitle">Data Center Investment Analysis</h1>
+<div class="top-bar-right">
+<div class="lang-switch">
+<button class="lang-btn" data-lang="am">&#1344;&#1377;&#1397;</button>
+<button class="lang-btn" data-lang="ru">&#1056;&#1091;&#1089;</button>
+<button class="lang-btn active" data-lang="en">Eng</button>
+</div>
+<span class="badge">THESIS v2.0</span>
+</div>
+</header>
+<div class="content-scroll">
+<!-- TAB 1 -->
+<div class="tab-panel active" id="tab1">
+<div class="kpi-row">
+<div class="kpi-card"><div class="kpi-label" data-i18n="kpiRoiLabel">Project ROI</div><div class="kpi-value" id="kpiRoi">49.9%</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiRoiSub">High return via leasing</span></div></div>
+<div class="kpi-card"><div class="kpi-label" data-i18n="kpiNpvLabel">NPV (Net Present Value)</div><div class="kpi-value" id="kpiNpv">6,506M</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span id="kpiNpvSub">AMD &bull; r = 10%</span></div></div>
+<div class="kpi-card"><div class="kpi-label" data-i18n="kpiPayLabel">Payback Period</div><div class="kpi-value" id="kpiPayback">2.47 Yrs</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiPaySub">Below 3-year target</span></div></div>
+<div class="kpi-card"><div class="kpi-label" data-i18n="kpiRoeLabel">Company ROE</div><div class="kpi-value">24% &rarr; 36%</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiRoeSub">+12pp improvement</span></div></div>
+</div>
+<div class="dash-grid">
+<div class="card">
+<div class="card-hdr"><h3 data-i18n="simTitle">Investment Simulator</h3><span class="card-tag" data-i18n="simTag">Interactive</span></div>
+<div class="fg"><label data-i18n="simFund">Funding Strategy</label><select id="simMode" class="fc"><option value="leasing" data-i18n-opt="simLeasing">Financial Leasing (CAPEX: 4,230M AMD)</option><option value="credit" data-i18n-opt="simCredit">Bank Credit (CAPEX: 9,124M AMD)</option></select></div>
+<div class="fg"><label><span data-i18n="simRate">Discount Rate (r)</span></label><div class="slider-row"><input type="range" id="simRate" min="5" max="25" value="10" step="1"><div class="slider-val" id="rateDisplay">10%</div></div></div>
+<div class="fg"><label><span data-i18n="simAmount">Investor Contribution</span> <span data-i18n="simUnit">(Millions AMD)</span></label><input type="number" id="simAmount" class="fc" value="500" min="10" step="10"></div>
+<div class="result-box"><div class="result-row"><span data-i18n="resShare">Ownership Share</span><strong id="resShare">11.82%</strong></div><div class="result-row"><span data-i18n="resProfit">Expected Profit (Year 5)</span><strong id="resProfit">310.6M AMD</strong></div></div>
+<button class="btn-primary" id="btnSave" disabled data-i18n="btnSave">Save Configuration</button>
+</div>
+<div class="card">
+<div class="card-hdr"><h3 data-i18n="esgTitle">ESG &amp; Safety Radar</h3><span class="card-tag" data-i18n="esgTag">Impact</span></div>
+<div class="esg-grid">
+<div class="esg-item"><div class="esg-icon" style="background:var(--green-bg);color:var(--green);">&#127807;</div><div class="esg-val" style="color:var(--green);">-25t</div><div class="esg-lbl" data-i18n="esgCo2">CO&#8322; Reduction<br>per Year</div></div>
+<div class="esg-item"><div class="esg-icon" style="background:var(--amber-bg);color:var(--amber);">&#9728;&#65039;</div><div class="esg-val" style="color:#E67E22;">30%</div><div class="esg-lbl" data-i18n="esgSolar">Energy Saved<br>via Solar Panels</div></div>
+<div class="esg-item"><div class="esg-icon" style="background:var(--red-glow);color:var(--red);">&#128737;</div><div class="esg-val" style="color:var(--red);">40M</div><div class="esg-lbl" data-i18n="esgFines">AMD Fines<br>Prevented Annually</div></div>
+</div>
+<div class="esg-info" data-i18n="esgInfo"><strong>Safety Economics:</strong> The Eos model (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) proves that fire suppression, UPS systems, and PPE investments yield a net positive return by eliminating regulatory penalties and operational downtime.</div>
+</div>
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="chartTitle">Cumulative Cash Flows &mdash; 5-Year Projection</h3><span class="card-tag" id="chartTag">Showing: Financial Leasing</span></div>
+<div class="chart-wrap"><canvas id="cashFlowChart"></canvas></div>
+</div>
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="chatTitle">AI Strategic Assistant</h3><span class="card-tag" data-i18n="chatTag">Thesis Q&amp;A</span></div>
+<div class="chat-container">
+<div class="chat-messages" id="chatMessages"><div class="chat-msg bot" data-i18n="chatWelcome">Hello! I am the Viva Armenia project advisor. Ask me about leasing vs. credit, ESG impact, safety economics, or the Python methodology.</div></div>
+<div class="chat-chips" id="chatChips"></div>
+<div class="chat-input-row"><input type="text" id="chatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Ask about leasing, credit, ESG, safety, NPV..."><button id="btnChat" data-i18n="chatSend">Send</button></div>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2 -->
+<div class="tab-panel" id="tab2">
+<div class="dash-grid">
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="compTitle">Financing Strategy Comparison</h3><span class="card-tag" data-i18n="compTag">Credit vs Leasing</span></div>
+<table class="comp-table"><thead><tr><th data-i18n="thMetric">Metric</th><th data-i18n="thCredit">Bank Credit</th><th data-i18n="thLeasing">Financial Leasing</th><th data-i18n="thAdv">Advantage</th></tr></thead><tbody id="compBody"></tbody></table>
+</div>
+<div class="card">
+<div class="card-hdr"><h3 data-i18n="sensTitle">IRR Sensitivity Map</h3><span class="card-tag" data-i18n="sensTag">NPV vs Discount Rate</span></div>
+<table class="sens-table" id="sensTable"></table>
+</div>
+<div class="card">
+<div class="card-hdr"><h3 data-i18n="vatTitle">VAT / Net Amount Converter</h3><span class="card-tag" data-i18n="vatTag">B2B Revenue</span></div>
+<div class="fg"><label data-i18n="vatLabel">Display Mode</label><select id="vatMode" class="fc"><option value="net" data-i18n-opt="vatNet">Net Value (Excluding VAT)</option><option value="gross" data-i18n-opt="vatGross">Gross Value (+20% VAT)</option></select></div>
+<div class="vat-grid">
+<div class="vat-item"><div class="vat-name" data-i18n="svcIaas">IaaS Cloud Services</div><div class="vat-val" id="vIaas">2,400</div><div class="vat-unit" data-i18n="vatUnit">M AMD / Year</div></div>
+<div class="vat-item"><div class="vat-name" data-i18n="svcVps">Virtual Servers (VPS)</div><div class="vat-val" id="vVps">1,500</div><div class="vat-unit" data-i18n="vatUnit2">M AMD / Year</div></div>
+<div class="vat-item"><div class="vat-name" data-i18n="svcStorage">Storage &amp; Backup</div><div class="vat-val" id="vStorage">2,100</div><div class="vat-unit" data-i18n="vatUnit3">M AMD / Year</div></div>
+<div class="vat-item"><div class="vat-name" data-i18n="svcColo">Colocation Services</div><div class="vat-val" id="vColo">800</div><div class="vat-unit" data-i18n="vatUnit4">M AMD / Year</div></div>
+</div>
+<div class="vat-total"><span class="vat-total-label" data-i18n="vatTotal">Total Annual Revenue</span><span class="vat-total-val" id="vTotal">6,800 M AMD</span></div>
+</div>
+</div>
+</div>
+<!-- TAB 3 -->
+<div class="tab-panel" id="tab3">
+<div class="dash-grid">
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="codeTitle">Financial Modeling &mdash; Python Source Code</h3><span class="card-tag">numpy_financial &bull; pandas</span></div>
+<div class="code-editor"><div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span>financial_model.py</span></div>
+<div class="code-body">
+<span class="line"><span class="kw">import</span> numpy <span class="kw">as</span> np</span>
+<span class="line"><span class="kw">import</span> numpy_financial <span class="kw">as</span> npf</span>
+<span class="line"><span class="kw">import</span> pandas <span class="kw">as</span> pd</span>
+<span class="line"></span>
+<span class="line"><span class="cm"># &#x2500;&#x2500; Define annual cash flows &#x2500;&#x2500;</span></span>
+<span class="line"><span class="vr">leasing_cf</span> <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">-4230</span>, <span class="nm">2470</span>, <span class="nm">2670</span>, <span class="nm">2870</span>, <span class="nm">3070</span>, <span class="nm">3270</span>])</span>
+<span class="line"><span class="vr">credit_cf</span>  <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">-9124</span>, <span class="nm">2265</span>, <span class="nm">2465</span>, <span class="nm">2665</span>, <span class="nm">2865</span>, <span class="nm">3065</span>])</span>
+<span class="line"></span>
+<span class="line"><span class="cm"># &#x2500;&#x2500; NPV at r = 10% &#x2500;&#x2500;</span></span>
+<span class="line"><span class="vr">r</span> <span class="op">=</span> <span class="nm">0.10</span></span>
+<span class="line"><span class="vr">npv_leasing</span> <span class="op">=</span> npf.<span class="fn">npv</span>(r, leasing_cf)  <span class="cm"># &#x2192; 6,506M AMD</span></span>
+<span class="line"><span class="vr">npv_credit</span>  <span class="op">=</span> npf.<span class="fn">npv</span>(r, credit_cf)   <span class="cm"># &#x2192;   834M AMD</span></span>
+<span class="line"></span>
+<span class="line"><span class="cm"># &#x2500;&#x2500; Internal Rate of Return &#x2500;&#x2500;</span></span>
+<span class="line"><span class="vr">irr_leasing</span> <span class="op">=</span> npf.<span class="fn">irr</span>(leasing_cf)  <span class="cm"># &#x2192; 42.70%</span></span>
+<span class="line"><span class="vr">irr_credit</span>  <span class="op">=</span> npf.<span class="fn">irr</span>(credit_cf)   <span class="cm"># &#x2192; 12.38%</span></span>
+<span class="line"></span>
+<span class="line"><span class="cm"># &#x2500;&#x2500; Sensitivity sweep &#x2500;&#x2500;</span></span>
+<span class="line"><span class="vr">rates</span> <span class="op">=</span> np.<span class="fn">arange</span>(<span class="nm">0.05</span>, <span class="nm">0.26</span>, <span class="nm">0.01</span>)</span>
+<span class="line"><span class="vr">sensitivity</span> <span class="op">=</span> pd.<span class="fn">DataFrame</span>({</span>
+<span class="line">    <span class="st">'Rate'</span>: rates,</span>
+<span class="line">    <span class="st">'NPV_Leasing'</span>: [npf.<span class="fn">npv</span>(r, leasing_cf) <span class="kw">for</span> r <span class="kw">in</span> rates],</span>
+<span class="line">    <span class="st">'NPV_Credit'</span>:  [npf.<span class="fn">npv</span>(r, credit_cf)  <span class="kw">for</span> r <span class="kw">in</span> rates],</span>
+<span class="line">})</span>
+<span class="line"></span>
+<span class="line"><span class="cm"># &#x2500;&#x2500; Comparison table &#x2500;&#x2500;</span></span>
+<span class="line"><span class="vr">result</span> <span class="op">=</span> pd.<span class="fn">DataFrame</span>({</span>
+<span class="line">    <span class="st">'Metric'</span>:  [<span class="st">'NPV'</span>, <span class="st">'IRR'</span>, <span class="st">'Payback'</span>, <span class="st">'ROI'</span>],</span>
+<span class="line">    <span class="st">'Leasing'</span>: [<span class="fn">f</span><span class="st">'{npv_leasing:,.0f}'</span>, <span class="fn">f</span><span class="st">'{irr_leasing*100:.2f}%'</span>, <span class="st">'2.47y'</span>, <span class="st">'49.9%'</span>],</span>
+<span class="line">    <span class="st">'Credit'</span>:  [<span class="fn">f</span><span class="st">'{npv_credit:,.0f}'</span>,  <span class="fn">f</span><span class="st">'{irr_credit*100:.2f}%'</span>,  <span class="st">'4.69y'</span>, <span class="st">'22.5%'</span>],</span>
+<span class="line">})</span>
+<span class="line"><span class="fn">print</span>(result.<span class="fn">to_string</span>(index<span class="op">=</span><span class="kw">False</span>))</span>
+</div></div>
+</div>
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="flowTitle">Algorithm Automation Flow</h3><span class="card-tag" data-i18n="flowTag">Pipeline</span></div>
+<div class="flow-diagram">
+<div class="flow-step s1"><div class="flow-icon">&#128202;</div><div class="flow-title" data-i18n="flow1t">Raw Data</div><div class="flow-desc" data-i18n="flow1d">Excel / CSV inputs</div></div>
+<div class="flow-arrow">&#10148;</div>
+<div class="flow-step s2"><div class="flow-icon">&#128013;</div><div class="flow-title" data-i18n="flow2t">Python / Pandas</div><div class="flow-desc" data-i18n="flow2d">Data cleaning &amp; structuring</div></div>
+<div class="flow-arrow">&#10148;</div>
+<div class="flow-step s3"><div class="flow-icon">&#9889;</div><div class="flow-title" data-i18n="flow3t">numpy_financial</div><div class="flow-desc" data-i18n="flow3d">NPV, IRR computation</div></div>
+<div class="flow-arrow">&#10148;</div>
+<div class="flow-step s4"><div class="flow-icon">&#128200;</div><div class="flow-title" data-i18n="flow4t">Dashboard</div><div class="flow-desc" data-i18n="flow4d">Chart.js visualization</div></div>
+</div>
+</div>
+<div class="card span-2">
+<div class="card-hdr"><h3 data-i18n="methTitle">Methodology &amp; Automation</h3><span class="card-tag" data-i18n="methTag">Approach</span></div>
+<p style="font-size:13px;line-height:1.8;max-width:900px;color:var(--text);" data-i18n="methDesc">All financial projections were computed using Python 3.11 with automated scripts, ensuring reproducibility and eliminating human calculation errors across 42 scenario combinations.</p>
+<div class="tech-grid">
+<div class="tech-card"><div class="tc-icon">&#128200;</div><h4>numpy_financial</h4><p data-i18n="tech1">Industry-standard NPV and IRR computations with sensitivity sweeps across 21 discount rates.</p></div>
+<div class="tech-card"><div class="tc-icon">&#128202;</div><h4>pandas DataFrames</h4><p data-i18n="tech2">Structured comparison tables, automated VAT conversions, and multi-year cash flow aggregation.</p></div>
+<div class="tech-card"><div class="tc-icon">&#9889;</div><h4 data-i18n="tech3h">Dynamic Programming</h4><p data-i18n="tech3">Optimized scenario analysis evaluating 42 parameter combinations across both financing models.</p></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+(function(){
+'use strict';
+/* ================================================
+ * SECTION 1: TRILINGUAL TRANSLATION ENGINE (i18n)
+ * All UI text is stored in T object, keyed by language.
+ * data-i18n attributes bind elements to translation keys.
+ * ================================================ */
+var currentLang='en';
+var T={
+en:{
+brandSub:'Strategic Dashboard',navLabel:'Analytics',nav1:'Executive Dashboard',nav2:'Financial Analytics',nav3:'Tech & Algorithms',
+footer:"Master's Thesis — Economics<br>Raffi Poghosyan • NPUA 2026",
+topTitle:'Data Center Investment Analysis',
+kpiRoiLabel:'Project ROI',kpiRoiSub:'High return via leasing',
+kpiNpvLabel:'NPV (Net Present Value)',
+kpiPayLabel:'Payback Period',kpiPaySub:'Below 3-year target',
+kpiRoeLabel:'Company ROE',kpiRoeSub:'+12pp improvement',
+simTitle:'Investment Simulator',simTag:'Interactive',simFund:'Funding Strategy',
+simLeasing:'Financial Leasing (CAPEX: 4,230M AMD)',simCredit:'Bank Credit (CAPEX: 9,124M AMD)',
+simRate:'Discount Rate (r)',simAmount:'Investor Contribution',simUnit:'(Millions AMD)',
+resShare:'Ownership Share',resProfit:'Expected Profit (Year 5)',
+btnSave:'Save Configuration',saveAlert:'Configuration saved successfully!',
+esgTitle:'ESG & Safety Radar',esgTag:'Impact',
+esgCo2:'CO₂ Reduction<br>per Year',esgSolar:'Energy Saved<br>via Solar Panels',esgFines:'AMD Fines<br>Prevented Annually',
+esgInfo:'<strong>Safety Economics:</strong> The Eos model (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) proves that fire suppression, UPS systems, and PPE investments yield a net positive return by eliminating regulatory penalties and operational downtime.',
+chartTitle:'Cumulative Cash Flows — 5-Year Projection',
+chartTagL:'Showing: Financial Leasing',chartTagC:'Showing: Bank Credit',
+chartLeasingLabel:'Financial Leasing',chartCreditLabel:'Bank Credit',
+chatTitle:'AI Strategic Assistant',chatTag:'Thesis Q&A',
+chatWelcome:'Hello! I am the Viva Armenia project advisor. Ask me about leasing vs. credit, ESG impact, safety economics, or the Python methodology.',
+chatPlaceholder:'Ask about leasing, credit, ESG, safety, NPV...',chatSend:'Send',
+chips:['Why Leasing?','ESG Impact','NPV Analysis','Safety ROI','Python Logic'],
+compTitle:'Financing Strategy Comparison',compTag:'Credit vs Leasing',
+thMetric:'Metric',thCredit:'Bank Credit',thLeasing:'Financial Leasing',thAdv:'Advantage',
+mCapex:'Initial CAPEX',mNpv:'Net Present Value (NPV)',mIrr:'Internal Rate of Return (IRR)',mRoi:'Return on Investment (ROI)',mPayback:'Payback Period',mProfit:'Year-5 Net Profit',
+sensTitle:'IRR Sensitivity Map',sensTag:'NPV vs Discount Rate',sensRate:'Discount Rate',sensLeasing:'NPV Leasing',sensCredit:'NPV Credit',
+vatTitle:'VAT / Net Amount Converter',vatTag:'B2B Revenue',vatLabel:'Display Mode',
+vatNet:'Net Value (Excluding VAT)',vatGross:'Gross Value (+20% VAT)',
+svcIaas:'IaaS Cloud Services',svcVps:'Virtual Servers (VPS)',svcStorage:'Storage & Backup',svcColo:'Colocation Services',
+vatUnit:'M AMD / Year',vatUnit2:'M AMD / Year',vatUnit3:'M AMD / Year',vatUnit4:'M AMD / Year',vatTotal:'Total Annual Revenue',
+codeTitle:'Financial Modeling — Python Source Code',
+flowTitle:'Algorithm Automation Flow',flowTag:'Pipeline',
+flow1t:'Raw Data',flow1d:'Excel / CSV inputs',flow2t:'Python / Pandas',flow2d:'Data cleaning & structuring',
+flow3t:'numpy_financial',flow3d:'NPV, IRR computation',flow4t:'Dashboard',flow4d:'Chart.js visualization',
+methTitle:'Methodology & Automation',methTag:'Approach',
+methDesc:'All financial projections were computed using Python 3.11 with automated scripts, ensuring reproducibility and eliminating human calculation errors across 42 scenario combinations.',
+tech1:'Industry-standard NPV and IRR computations with sensitivity sweeps across 21 discount rates.',
+tech2:'Structured comparison tables, automated VAT conversions, and multi-year cash flow aggregation.',
+tech3h:'Dynamic Programming',tech3:'Optimized scenario analysis evaluating 42 parameter combinations across both financing models.',
+yrs:'Yrs',base:'Base'
+},
+am:{
+brandSub:'Ռազմավարական վահանակ',navLabel:'Վերլուծություն',
+nav1:'Գլխավոր վահանակ',nav2:'Ֆինանսական վերլուծություն',nav3:'Տեխնոլոգիա և ալգորիթմներ',
+footer:'Մագիստրոսական թեզ — Տնտեսագիտություն<br>Ռաֆֆի Պողոսյան • ՀԱՊՀ 2026',
+topTitle:'Data Center նախագծի գնահատում',
+kpiRoiLabel:'Նախագծի ROI',kpiRoiSub:'Բարձր եկամտաբերություն լիզինգով',
+kpiNpvLabel:'ԶՆԱ (Զուտ ներկա արժեք)',
+kpiPayLabel:'Վերադարձի ժամկետ',kpiPaySub:'3 տարիներից պակաս',
+kpiRoeLabel:'Ընկերության ROE',kpiRoeSub:'+12տկ բարելավում',
+simTitle:'Ներդրումային սիմուլյատոր',simTag:'Ինտերակտիվ',simFund:'Ֆինանսավորման ռազմավարություն',
+simLeasing:'Ֆինանսական լիզինգ (CAPEX: 4,230Մ դրամ)',simCredit:'Բանկային վարկ (CAPEX: 9,124Մ դրամ)',
+simRate:'Զեղծի տոկոսադրույք (r)',simAmount:'Ներդրողի ներդրում',simUnit:'(մլն դրամ)',
+resShare:'Կապիտալի բաժնեմաս',resProfit:'Սպասվող շահույթ (5-րդ տարի)',
+btnSave:'Պահպանել',saveAlert:'Կոնֆիգուրացիան հաջողությամբ պահպանվեց!',
+esgTitle:'ESG և անվտանգություն',esgTag:'Ազդեցություն',
+esgCo2:'CO₂ կրճատում<br>տարեկան',esgSolar:'Էներգիա խնայողություն<br>արևային վահանակներով',esgFines:'Տուգանքների<br>կանխարգելում',
+esgInfo:'<strong>Անվտանգության տնտեսագիտություն.</strong> Eos մոդելը (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) ապացուցում է, որ հրդեհաշիիման, UPS և պաշտպանության ներդրումները դրական վերադարձ են տալիս։',
+chartTitle:'Կուտակային դրամական հոսքեր — 5 տարի',
+chartTagL:'Ցուցադրվում է: Ֆինանսական լիզինգ',chartTagC:'Ցուցադրվում է: Բանկային վարկ',
+chatTitle:'AI Ռազմավարական խորհրդատու',chatTag:'Հարց և պատասխան',
+chatWelcome:'Բարև Ձեզ։ Ես Viva Armenia նախագծի խորհրդատունն եմ։ Հարցրեք լիզինգի, վարկի, ESG-ի կամ Python մեթոդոլոգիայի մասին։',
+chatPlaceholder:'Հարցրեք լիզինգի, վարկի, ESG, NPV...',chatSend:'Ուղարկել',
+chips:['Ինչու։ լիզինգ?','ESG ազդեցություն','NPV վերլուծություն','Անվտանգություն','Python տրամաբանություն'],
+compTitle:'Ֆինանսավորման համեմատում',compTag:'Վարկ ընդ լիզինգ',
+thMetric:'Ցուցանիշ',thCredit:'Բանկային վարկ',thLeasing:'Ֆին. լիզինգ',thAdv:'Առավելություն',
+mCapex:'Սկզբնական CAPEX',mNpv:'Զուտ ներկա արժեք (NPV)',mIrr:'Ներքին եկամտ. նորմա (IRR)',mRoi:'ROI',mPayback:'Վերադարձի ժամկետ',mProfit:'5-րդ տարվա շահույթ',
+sensTitle:'IRR զգայունության քարտեզ',sensTag:'NPV ըստ զեղցի տոկոսի',sensRate:'Զեղցի տոկոս',sensLeasing:'NPV լիզինգ',sensCredit:'NPV վարկ',
+vatTitle:'ԱԱՀ / Զուտ արժեքի փոխարկիչ',vatTag:'B2B եկամուտ',vatLabel:'Ցուցադրման ռեժիմ',
+vatNet:'Զուտ արժեք (առանց ԱԱՀ)',vatGross:'Համախառն (+20% ԱԱՀ)',
+svcIaas:'IaaS ամպային ծառայություններ',svcVps:'Վիրտուալ սերվերներ (VPS)',svcStorage:'Storage և Backup',svcColo:'Colocation',
+vatUnit:'մլն դրամ / տարի',vatUnit2:'մլն դրամ / տարի',vatUnit3:'մլն դրամ / տարի',vatUnit4:'մլն դրամ / տարի',vatTotal:'Տարեկան ընդհանուր հասույթ',
+codeTitle:'Ֆինանսական մոդելավորում — Python',
+flowTitle:'Ալգորիթմի ավտոմատացման հոսք',flowTag:'Փայպլայն',
+flow1t:'Նախնական տվյալներ',flow1d:'Excel / CSV',flow2t:'Python / Pandas',flow2d:'Տվյալների մաքրում',
+flow3t:'numpy_financial',flow3d:'NPV, IRR հաշվարկ',flow4t:'Վահանակ',flow4d:'Chart.js վիզուալիզացիա',
+methTitle:'Մեթոդոլոգիա և ավտոմատացում',methTag:'Մոտեցում',
+methDesc:'Բոլոր կանխատեսումները Python 3.11-ով՝ ապահովելով վերարտադրելիություն 42 սցենարների համար։',
+tech1:'NPV և IRR հաշվարկներ 21 զեղցի տոկոսադրույքների համար։',
+tech2:'Կառուցվածքային աղյուսակներ, ԱԱՀ փոխարկումներ։',
+tech3h:'Դինամիկ ծրագրավորում',tech3:'42 պարամետրերի օպտիմալացում։',
+yrs:'տարի',base:'Բազային',
+chartLeasingLabel:'Ֆին. լիզինգ',chartCreditLabel:'Բանկ. վարկ'
+},
+ru:{
+brandSub:'Стратегическая панель',navLabel:'Аналитика',
+nav1:'Обзорная панель',nav2:'Финансовая аналитика',nav3:'Технологии и алгоритмы',
+footer:'Магистерская диссертация — Экономика<br>Раффи Погосян • НПУА 2026',
+topTitle:'Анализ инвестиций в Data Center',
+kpiRoiLabel:'ROI проекта',kpiRoiSub:'Высокая доходность лизинга',
+kpiNpvLabel:'ЧДС (Чистая приведённая стоимость)',
+kpiPayLabel:'Срок окупаемости',kpiPaySub:'Менее 3 лет',
+kpiRoeLabel:'ROE компании',kpiRoeSub:'+12пп улучшение',
+simTitle:'Инвест. симулятор',simTag:'Интерактив',simFund:'Стратегия финансирования',
+simLeasing:'Фин. лизинг (CAPEX: 4 230М драм)',simCredit:'Банк. кредит (CAPEX: 9 124М драм)',
+simRate:'Ставка дисконт. (r)',simAmount:'Вклад инвестора',simUnit:'(млн драм)',
+resShare:'Доля владения',resProfit:'Прибыль (5-й год)',
+btnSave:'Сохранить',saveAlert:'Конфигурация сохранена!',
+esgTitle:'ESG и безопасность',esgTag:'Воздействие',
+esgCo2:'Сокращение CO₂<br>в год',esgSolar:'Экономия энергии<br>солн. панели',esgFines:'Штрафы<br>предотвращены',
+esgInfo:'<strong>Экономика безопасности:</strong> Модель Eos (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) доказывает, что инвестиции в пожаротушение, ИБП и СИЗ дают положительный возврат.',
+chartTitle:'Кумулятивные потоки — 5 лет',
+chartTagL:'Показан: Фин. лизинг',chartTagC:'Показан: Банк. кредит',
+chatTitle:'AI ассистент',chatTag:'Вопросы',
+chatWelcome:'Здравствуйте! Я консультант Viva Armenia. Спрашивайте о лизинге, кредите, ESG или Python.',
+chatPlaceholder:'Спросите о лизинге, кредите, ESG, NPV...',chatSend:'Отправить',
+chips:['Почему лизинг?','Влияние ESG','Анализ NPV','РОИ безопасности','Логика Python'],
+compTitle:'Сравнение стратегий',compTag:'Кредит vs лизинг',
+thMetric:'Показатель',thCredit:'Банк. кредит',thLeasing:'Фин. лизинг',thAdv:'Преимущество',
+mCapex:'Нач. CAPEX',mNpv:'ЧДС (NPV)',mIrr:'IRR',mRoi:'ROI',mPayback:'Окупаемость',mProfit:'Прибыль 5-го года',
+sensTitle:'Карта чувствительности',sensTag:'NPV vs ставка',sensRate:'Ставка',sensLeasing:'NPV лизинг',sensCredit:'NPV кредит',
+vatTitle:'Конвертер НДС',vatTag:'B2B выручка',vatLabel:'Режим',
+vatNet:'Без НДС',vatGross:'С НДС (+20%)',
+svcIaas:'IaaS облачные',svcVps:'VPS сервера',svcStorage:'Хранилище',svcColo:'Colocation',
+vatUnit:'млн драм/год',vatUnit2:'млн драм/год',vatUnit3:'млн драм/год',vatUnit4:'млн драм/год',vatTotal:'Итого выручка',
+codeTitle:'Фин. моделирование — Python',
+flowTitle:'Поток автоматизации',flowTag:'Пайплайн',
+flow1t:'Исходные данные',flow1d:'Excel / CSV',flow2t:'Python / Pandas',flow2d:'Очистка данных',
+flow3t:'numpy_financial',flow3d:'Расчёт NPV, IRR',flow4t:'Панель',flow4d:'Визуализация',
+methTitle:'Методология',methTag:'Подход',
+methDesc:'Все прогнозы на Python 3.11, обеспечивая воспроизводимость в 42 сценариях.',
+tech1:'Расчёты NPV/IRR по 21 ставке.',tech2:'Таблицы, конвертация НДС, агрегация.',
+tech3h:'Динам. прогр.',tech3:'42 комбинации параметров.',
+yrs:'лет',base:'База',chartLeasingLabel:'Фин. лизинг',chartCreditLabel:'Банк. кредит'
+}
+};
+/* ================================================
+ * SECTION 2: TRILINGUAL AI KNOWLEDGE BASE
+ * Keyword-to-response mapping for each language.
+ * ================================================ */
+var KB={en:{
+leasing:'Financial Leasing is superior: 53% less CAPEX (4,230M vs 9,124M AMD), NPV of 6,506M AMD at r=10%, payback in 2.47 years, IRR of 42.70%.',
+credit:'Bank Credit needs 9,124M AMD CAPEX. Payback: 4.69y, NPV: 834M AMD, IRR: 12.38%. Leasing is clearly optimal.',
+esg:'Solar panels reduce CO₂ by 25t/yr and energy costs by 30%. Aligns with GRI/SASB standards.',
+safety:'Eos formula proves fire suppression and PPE prevent 40M AMD in annual fines. Safety is an investment.',
+npv:'NPV at r=10%: Leasing 6,506M vs Credit 834M AMD — 7.8x advantage. Adjust the slider to explore sensitivity.',
+roi:'ROI: Leasing 49.9% vs Credit 22.5%. 27.4pp advantage driven by lower CAPEX.',
+irr:'IRR: Leasing 42.70% vs Credit 12.38%. Leasing exceeds 10% discount rate by 32.7pp.',
+python:'Python 3.11 with numpy_financial (NPV/IRR), pandas (data), 42 automated scenarios.',
+payback:'Payback: Leasing 2.47y vs Credit 4.69y — nearly 50% faster recovery.',
+solar:'Solar: 25t CO₂ reduction + 30% energy savings. Reduces diesel dependency.',
+datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Revenue: 6,800M AMD/yr net.'
+},am:{
+leasing:'Ֆին. լիզինգը գերազանցն է: CAPEX 53%-ով պակաս, NPV 6,506Մ, IRR 42.70%, վերադարձ 2.47 տարի։',
+credit:'Բանկ. վարկը պահանինակում է 9,124Մ CAPEX. Վերադարձը 4.69 տարի, NPV 834Մ, IRR 12.38%։',
+esg:'Արև. վահանակները կրճատում են CO₂-ը 25տ-ով, Էներգիան 30%-ով։ GRI/SASB չափանիշներ։',
+safety:'Eos մոդել. Հրդեհաշիիման ներդրումները կանխարգելում են 40Մ տուգանքներ։',
+npv:'ԶՆԱ r=10%: լիզինգ 6,506Մ, վարկ 834Մ — 7.8× առավելություն։',
+roi:'ROI: լիզինգ 49.9%, վարկ 22.5%։ 27.4տկ տարբերություն։',
+irr:'IRR: լիզինգ 42.70%, վարկ 12.38%։',
+python:'Python 3.11, numpy_financial, pandas, 42 սցենար։',
+payback:'Վերադարձ: լիզինգ 2.47տ, վարկ 4.69տ — 50% արագ։',
+solar:'Արև. վահանակ: 25տ CO₂ կրճատում + 30% խնայողություն։',
+datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Հասույթ: 6,800Մ դրամ/տարի։'
+},ru:{
+leasing:'Фин. лизинг оптимален: CAPEX на 53% меньше, NPV 6 506М, IRR 42,70%, окупаемость 2,47 г.',
+credit:'Банк. кредит: CAPEX 9 124М, окупаемость 4,69г, NPV 834М, IRR 12,38%.',
+esg:'Солн. панели: -25т CO₂/г, -30% энергозатрат. Соответствует GRI/SASB.',
+safety:'Формула Eos: инвестиции в безопасность предотвращают штрафы 40М драм/год.',
+npv:'ЧДС r=10%: лизинг 6 506М, кредит 834М. Преимущество 7,8×.',
+roi:'ROI: лизинг 49,9%, кредит 22,5%. Разница 27,4пп.',
+irr:'IRR: лизинг 42,70%, кредит 12,38%.',
+python:'Python 3.11, numpy_financial, pandas, 42 сценария.',
+payback:'Окупаемость: лизинг 2,47г, кредит 4,69г — вдвое быстрее.',
+solar:'Солн. панели: 25т CO₂ + 30% экономия.',
+datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Выручка: 6 800М драм/год.'
+}};
+var FALLBACKS={en:['Great question! Try asking about NPV, ROI, ESG, or Python methodology.','I specialize in leasing vs credit, ESG, safety economics, and Python methods.','Rephrase? I can discuss NPV (6,506M vs 834M), IRR, or payback periods.'],
+am:['Հարցրեք NPV-ի, ROI-ի, ESG-ի կամ Python մասին։','Կարող եմ խոսել NPV (6,506Մ ընդ 834Մ), IRR, վերադարձի մասին։'],
+ru:['Спросите о NPV, ROI, ESG или методологии Python.','Могу обсудить NPV (6 506М vs 834М), IRR, окупаемость.']};
+/* ================================================
+ * SECTION 3: FINANCIAL DATA CONSTANTS
+ * ================================================ */
+var MODELS={
+leasing:{cap:4230,netProfitY5:2628.69,payback:2.47,roi:49.9,irr:42.70,annualCF:[-4230,2470,2670,2870,3070,3270],cumCF:[-4230,-2984,-1165,1282,3920,6719]},
+credit:{cap:9124,netProfitY5:2560.81,payback:4.69,roi:22.5,irr:12.38,annualCF:[-9124,2265,2465,2665,2865,3065],cumCF:[-9124,-8123,-6481,-4221,-1782,803]}
+};
+var REVENUE={iaas:2400,vps:1500,storage:2100,colo:800};
+var YEARS=['Year 0','Year 1','Year 2','Year 3','Year 4','Year 5'];
+
+/* ================================================
+ * SECTION 4: i18n ENGINE
+ * Scans data-i18n attributes, updates from T[currentLang].
+ * ================================================ */
+function applyTranslations(){
+var lang=T[currentLang];
+document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(lang[k]!==undefined)el.innerHTML=lang[k];});
+document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){var k=el.getAttribute('data-i18n-placeholder');if(lang[k]!==undefined)el.placeholder=lang[k];});
+document.querySelectorAll('[data-i18n-opt]').forEach(function(el){var k=el.getAttribute('data-i18n-opt');if(lang[k]!==undefined)el.textContent=lang[k];});
+renderChips();buildComparisonTable();buildSensitivityTable();
+}
+
+/* ================================================
+ * SECTION 5: LANGUAGE SWITCHER
+ * ================================================ */
+document.querySelectorAll('.lang-btn').forEach(function(btn){
+btn.addEventListener('click',function(){
+document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+btn.classList.add('active');
+currentLang=btn.getAttribute('data-lang');
+applyTranslations();updateSimulator();renderChart();updateVAT();
+});
+});
+
+/* ================================================
+ * SECTION 6: COUNT-UP ANIMATION
+ * easeOutCubic for smooth KPI number transitions.
+ * ================================================ */
+function animateValue(el,target,suffix,duration){
+var start=0;var startTime=null;
+function step(ts){
+if(!startTime)startTime=ts;
+var progress=Math.min((ts-startTime)/duration,1);
+var eased=1-Math.pow(1-progress,3);
+var current=start+(target-start)*eased;
+if(suffix==='%'){el.textContent=current.toFixed(1)+'%';}
+else if(suffix==='Yrs'){el.textContent=current.toFixed(2)+' '+(T[currentLang].yrs||'Yrs');}
+else{el.textContent=Math.round(current).toLocaleString('en-US')+'M';}
+if(progress<1)requestAnimationFrame(step);
+else el.style.animation='countPulse 0.3s ease';
+}
+requestAnimationFrame(step);
+}
+
+/* ================================================
+ * SECTION 7: NPV CALCULATION
+ * ================================================ */
+function computeNPV(cfs,rate){var n=0;for(var i=0;i<cfs.length;i++)n+=cfs[i]/Math.pow(1+rate,i);return n;}
+
+/* ================================================
+ * SECTION 8: CHART.JS
+ * Destroys prev instance, redraws with translated labels.
+ * ================================================ */
+var cashFlowChart=null;
+function renderChart(){
+var mode=document.getElementById('simMode').value;
+var active=MODELS[mode];var other=mode==='leasing'?MODELS.credit:MODELS.leasing;
+var lang=T[currentLang];
+if(cashFlowChart)cashFlowChart.destroy();
+var ctx=document.getElementById('cashFlowChart').getContext('2d');
+cashFlowChart=new Chart(ctx,{
+type:'line',
+data:{labels:YEARS,datasets:[
+{label:mode==='leasing'?(lang.chartLeasingLabel+' ✓'):(lang.chartCreditLabel+' ✓'),data:active.cumCF,borderColor:mode==='leasing'?'#2ECC71':'#E3000F',backgroundColor:mode==='leasing'?'rgba(46,204,113,0.08)':'rgba(227,0,15,0.06)',borderWidth:3,pointRadius:5,pointBackgroundColor:mode==='leasing'?'#2ECC71':'#E3000F',pointBorderColor:'#fff',pointBorderWidth:2,fill:true,tension:0.35},
+{label:mode==='leasing'?lang.chartCreditLabel:lang.chartLeasingLabel,data:other.cumCF,borderColor:'#9CA3AF',backgroundColor:'transparent',borderWidth:2,borderDash:[6,4],pointRadius:3,pointBackgroundColor:'#9CA3AF',fill:false,tension:0.35}
+]},
+options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+plugins:{legend:{labels:{usePointStyle:true,padding:18,font:{family:"'Inter',sans-serif",size:11}}},
+tooltip:{backgroundColor:'#1A1C2C',padding:12,cornerRadius:8,callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toLocaleString()+'M AMD';}}}},
+scales:{y:{grid:{color:'#F0F2F5'},ticks:{font:{size:11},callback:function(v){return v.toLocaleString()+'M';}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
+});
+document.getElementById('chartTag').textContent=mode==='leasing'?lang.chartTagL:lang.chartTagC;
+}
+
+/* ================================================
+ * SECTION 9: SIMULATOR
+ * Updates KPIs with count-up animation on change.
+ * ================================================ */
+function updateSimulator(){
+var mode=document.getElementById('simMode').value;
+var rate=parseInt(document.getElementById('simRate').value)/100;
+var amount=parseFloat(document.getElementById('simAmount').value)||0;
+var model=MODELS[mode];
+document.getElementById('rateDisplay').textContent=document.getElementById('simRate').value+'%';
+var share=Math.min((amount/model.cap)*100,100);
+var profit=(share/100)*model.netProfitY5;
+document.getElementById('resShare').textContent=share.toFixed(2)+'%';
+document.getElementById('resProfit').textContent=Math.round(profit).toLocaleString('en-US')+'M AMD';
+var npv=computeNPV(model.annualCF,rate);
+animateValue(document.getElementById('kpiRoi'),model.roi,'%',700);
+animateValue(document.getElementById('kpiNpv'),npv,'M',700);
+animateValue(document.getElementById('kpiPayback'),model.payback,'Yrs',700);
+document.getElementById('kpiNpvSub').textContent='AMD • r = '+document.getElementById('simRate').value+'%';
+document.getElementById('btnSave').disabled=false;
+}
+document.getElementById('simMode').addEventListener('change',function(){updateSimulator();renderChart();});
+document.getElementById('simRate').addEventListener('input',updateSimulator);
+document.getElementById('simAmount').addEventListener('input',updateSimulator);
+document.getElementById('btnSave').addEventListener('click',function(){alert(T[currentLang].saveAlert);document.getElementById('btnSave').disabled=true;});
+
+/* ================================================
+ * SECTION 10: TAB NAVIGATION
+ * ================================================ */
+document.querySelectorAll('.nav-btn').forEach(function(btn){
+btn.addEventListener('click',function(){
+document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+btn.classList.add('active');var target=btn.getAttribute('data-tab');
+document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');if(p.id===target)p.classList.add('active');});
+});
+});
+
+/* ================================================
+ * SECTION 11: COMPARISON TABLE (Tab 2)
+ * Programmatically builds rows, highlights winner with green glow.
+ * ================================================ */
+function buildComparisonTable(){
+var lang=T[currentLang];
+var rows=[
+{name:lang.mCapex,credit:'9,124M AMD',leasing:'4,230M AMD',adv:'Leasing -54%'},
+{name:lang.mNpv,credit:'834M AMD',leasing:'6,506M AMD',adv:'Leasing +680%'},
+{name:lang.mIrr,credit:'12.38%',leasing:'42.70%',adv:'Leasing +30pp'},
+{name:lang.mRoi,credit:'22.5%',leasing:'49.9%',adv:'Leasing +122%'},
+{name:lang.mPayback,credit:'4.69 '+lang.yrs,leasing:'2.47 '+lang.yrs,adv:'Leasing -47%'},
+{name:lang.mProfit,credit:'2,560.8M AMD',leasing:'2,628.7M AMD',adv:'Leasing'}
+];
+var html='';
+rows.forEach(function(r){html+='<tr class="winner-row"><td class="metric-name">'+r.name+'</td><td class="val-credit">'+r.credit+'</td><td class="val-leasing">'+r.leasing+'</td><td><span class="winner">'+r.adv+'</span></td></tr>';});
+document.getElementById('compBody').innerHTML=html;
+}
+
+/* ================================================
+ * SECTION 12: IRR SENSITIVITY TABLE (Tab 2)
+ * NPV at r = 8%, 9%, 10% (base), 11%, 12%.
+ * ================================================ */
+function buildSensitivityTable(){
+var lang=T[currentLang];var rates=[8,9,10,11,12];
+var html='<thead><tr><th>'+lang.sensRate+'</th>';
+rates.forEach(function(r){html+='<th class="'+(r===10?'base-col':'')+'">'+r+'%'+(r===10?' ('+lang.base+')':'')+'</th>';});
+html+='</tr></thead><tbody><tr><td style="font-weight:700">'+lang.sensLeasing+'</td>';
+rates.forEach(function(r){var npv=computeNPV(MODELS.leasing.annualCF,r/100);var cls=r===10?'base-col':(npv>0?'pos':'neg');html+='<td class="'+cls+'">'+Math.round(npv).toLocaleString('en-US')+'M</td>';});
+html+='</tr><tr><td style="font-weight:700">'+lang.sensCredit+'</td>';
+rates.forEach(function(r){var npv=computeNPV(MODELS.credit.annualCF,r/100);var cls=r===10?'base-col':(npv>0?'pos':'neg');html+='<td class="'+cls+'">'+Math.round(npv).toLocaleString('en-US')+'M</td>';});
+html+='</tr></tbody>';document.getElementById('sensTable').innerHTML=html;
+}
+
+/* ================================================
+ * SECTION 13: VAT CONVERTER
+ * ================================================ */
+function updateVAT(){
+var mult=document.getElementById('vatMode').value==='gross'?1.2:1;
+var fmt=function(n){return(n*mult).toLocaleString('en-US');};
+document.getElementById('vIaas').textContent=fmt(REVENUE.iaas);
+document.getElementById('vVps').textContent=fmt(REVENUE.vps);
+document.getElementById('vStorage').textContent=fmt(REVENUE.storage);
+document.getElementById('vColo').textContent=fmt(REVENUE.colo);
+var total=(REVENUE.iaas+REVENUE.vps+REVENUE.storage+REVENUE.colo)*mult;
+document.getElementById('vTotal').textContent=total.toLocaleString('en-US')+' M AMD';
+}
+document.getElementById('vatMode').addEventListener('change',updateVAT);
+
+/* ================================================
+ * SECTION 14: AI CHATBOT (Trilingual)
+ * Keyword matching against KB[currentLang].
+ * Quick-question chips rendered per language.
+ * ================================================ */
+var fallbackIdx=0;
+function addMsg(text,isUser){
+var div=document.createElement('div');div.className='chat-msg '+(isUser?'user':'bot');div.textContent=text;
+document.getElementById('chatMessages').appendChild(div);
+document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
+}
+function processChat(text){
+if(!text||!text.trim())return;addMsg(text,true);document.getElementById('chatInput').value='';
+var typing=document.createElement('div');typing.className='chat-msg bot typing';typing.id='typingDot';typing.textContent='•••';
+document.getElementById('chatMessages').appendChild(typing);
+document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
+setTimeout(function(){
+var el=document.getElementById('typingDot');if(el)el.remove();
+var lower=text.toLowerCase();var kb=KB[currentLang]||KB.en;var response=null;
+var keys=Object.keys(kb);for(var i=0;i<keys.length;i++){if(lower.indexOf(keys[i])!==-1){response=kb[keys[i]];break;}}
+if(!response){var fb=FALLBACKS[currentLang]||FALLBACKS.en;response=fb[fallbackIdx%fb.length];fallbackIdx++;}
+addMsg(response,false);
+},800+Math.random()*700);
+}
+document.getElementById('btnChat').addEventListener('click',function(){processChat(document.getElementById('chatInput').value);});
+document.getElementById('chatInput').addEventListener('keypress',function(e){if(e.key==='Enter')processChat(document.getElementById('chatInput').value);});
+function renderChips(){
+var chips=T[currentLang].chips||T.en.chips;var container=document.getElementById('chatChips');container.innerHTML='';
+chips.forEach(function(label){var btn=document.createElement('button');btn.className='chip';btn.textContent=label;
+btn.addEventListener('click',function(){processChat(label);});container.appendChild(btn);});
+}
+
+/* ================================================
+ * SECTION 15: INITIALIZATION
+ * ================================================ */
+applyTranslations();renderChart();updateSimulator();
+document.getElementById('btnSave').disabled=true;updateVAT();
+})();
+</script>
+</body>
+</html>
