@@ -2,685 +2,1150 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Viva Armenia — Strategic Financial Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Viva Armenia — Ultimate Strategic Dashboard V6.0</title>
+<!-- Fonts & CDN Libraries -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--red:#E3000F;--red-hover:#C5000D;--red-glow:rgba(227,0,15,0.15);--navy:#1A1C2C;--navy-light:#252840;--bg:#F0F2F5;--card:rgba(255,255,255,0.82);--card-solid:#fff;--green:#2ECC71;--green-bg:rgba(46,204,113,0.1);--green-glow:rgba(46,204,113,0.18);--blue:#3B82F6;--blue-bg:rgba(59,130,246,0.08);--amber:#F59E0B;--amber-bg:rgba(245,158,11,0.08);--text:#1A1C2C;--text-sec:#6B7280;--border:#E5E7EB;--shadow:0 1px 3px rgba(0,0,0,0.05),0 4px 16px rgba(0,0,0,0.04);--shadow-lg:0 8px 32px rgba(0,0,0,0.08);--shadow-color:0 4px 20px rgba(227,0,15,0.08);--radius:16px;--radius-sm:10px;--sidebar-w:264px;--font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans Armenian',sans-serif}
-body{font-family:var(--font);background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:14px;line-height:1.6}
-.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;z-index:10}
-.sidebar-brand{padding:26px 22px 22px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.sidebar-brand .logo-row{display:flex;align-items:center;gap:11px;margin-bottom:5px}
-.logo-dot{width:34px;height:34px;background:linear-gradient(135deg,#E3000F,#FF4136);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:#fff;box-shadow:0 2px 10px rgba(227,0,15,0.35)}
-.sidebar-brand h2{font-size:15px;font-weight:700;color:#fff;letter-spacing:-0.3px}
-.sidebar-brand p{font-size:10.5px;color:rgba(255,255,255,0.35);margin-top:3px;letter-spacing:0.5px;text-transform:uppercase}
-.sidebar-nav{padding:14px 10px;flex:1}
-.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.25);padding:10px 14px 6px;font-weight:600}
-.nav-btn{display:flex;align-items:center;gap:11px;width:100%;background:none;border:none;padding:11px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.25s ease;text-align:left;font-family:var(--font);margin-bottom:2px}
-.nav-btn svg{width:18px;height:18px;opacity:0.5;flex-shrink:0;transition:all 0.25s}
-.nav-btn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.85)}
-.nav-btn:hover svg{opacity:0.85}
-.nav-btn.active{background:rgba(227,0,15,0.1);color:#fff;box-shadow:inset 3px 0 0 var(--red)}
-.nav-btn.active svg{opacity:1;color:#FF6B6B}
-.sidebar-footer{padding:18px 22px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:rgba(255,255,255,0.28);line-height:1.7}
-.main-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden}
-.top-bar{background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:14px 34px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.top-bar h1{font-size:18px;font-weight:700;letter-spacing:-0.4px}
-.top-bar-right{display:flex;align-items:center;gap:14px}
-.badge{background:var(--red);color:#fff;padding:4px 13px;border-radius:20px;font-size:10.5px;font-weight:700}
-.lang-switch{display:flex;background:var(--bg);border-radius:8px;padding:3px;gap:2px;border:1px solid var(--border)}
-.lang-btn{padding:5px 12px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);background:transparent;color:var(--text-sec);transition:all 0.2s ease}
-.lang-btn:hover{color:var(--text)}
-.lang-btn.active{background:var(--card-solid);color:var(--red);box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.content-scroll{flex:1;overflow-y:auto;padding:24px 34px 40px}
-.tab-panel{display:none;animation:fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)}.tab-panel.active{display:block}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes countPulse{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px}
-.kpi-card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.6);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);transition:all 0.3s ease;position:relative;overflow:hidden}
-.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--border),transparent);transition:background 0.4s}
-.kpi-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px)}
-.kpi-card:hover::before{background:linear-gradient(90deg,transparent,var(--red),transparent)}
-.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-sec);font-weight:600;margin-bottom:8px}
-.kpi-value{font-size:28px;font-weight:800;letter-spacing:-1.2px;color:var(--text);line-height:1.1}
-.kpi-sub{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11.5px;font-weight:600;color:var(--green)}
-.kpi-sub .arrow{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--green-bg);font-size:10px}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.card{background:var(--card);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.5);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);transition:all 0.3s ease}
-.card:hover{box-shadow:var(--shadow-lg)}.card.span-2{grid-column:span 2}
-.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:13px;border-bottom:1px solid var(--border)}
-.card-hdr h3{font-size:14.5px;font-weight:700}.card-tag{font-size:10px;text-transform:uppercase;letter-spacing:0.6px;padding:4px 10px;border-radius:6px;font-weight:600;background:var(--bg);color:var(--text-sec)}
-.fg{margin-bottom:16px}.fg label{display:block;margin-bottom:5px;font-size:12px;font-weight:600}.fg label span{color:var(--text-sec);font-weight:400}
-.fc{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:var(--font);background:rgba(255,255,255,0.9);color:var(--text);transition:all 0.2s;-webkit-appearance:none}
-.fc:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px var(--red-glow)}
-select.fc{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
-.slider-row{display:flex;align-items:center;gap:12px}
-.slider-row input[type="range"]{flex:1;height:5px;-webkit-appearance:none;background:linear-gradient(90deg,var(--red),#FF6B6B);border-radius:3px;outline:none}
-.slider-row input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#fff;border:3px solid var(--red);cursor:pointer;box-shadow:0 1px 6px rgba(227,0,15,0.3);transition:transform 0.15s}
-.slider-row input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.2)}
-.slider-val{min-width:44px;text-align:center;font-weight:700;font-size:13px;color:var(--red);background:var(--red-glow);padding:4px 10px;border-radius:6px}
-.result-box{background:linear-gradient(135deg,rgba(46,204,113,0.06),rgba(46,204,113,0.02));border:1px solid rgba(46,204,113,0.18);border-radius:var(--radius-sm);padding:16px 18px;margin-top:14px}
-.result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:13px}.result-row strong{font-weight:700;font-size:14.5px}
-.btn-primary{width:100%;padding:11px;border:none;border-radius:var(--radius-sm);background:linear-gradient(135deg,#E3000F,#FF4136);color:#fff;font-size:13px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all 0.3s ease;margin-top:12px}
-.btn-primary:hover:not(:disabled){box-shadow:0 4px 18px rgba(227,0,15,0.35);transform:translateY(-1px)}
-.btn-primary:disabled{background:var(--bg);color:#aaa;cursor:not-allowed;border:1px solid var(--border);box-shadow:none;transform:none}
-.chart-wrap{position:relative;height:310px;width:100%}
-.chat-container{display:flex;flex-direction:column;height:380px;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;background:#FAFBFC}
-.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
-.chat-msg{max-width:82%;padding:11px 15px;border-radius:16px;font-size:12.5px;line-height:1.55;animation:fadeUp 0.25s ease}
-.chat-msg.bot{background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px;align-self:flex-start}
-.chat-msg.user{background:var(--navy);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
-.chat-msg.typing{color:var(--text-sec);font-style:italic;letter-spacing:4px;font-size:18px}
-.chat-chips{display:flex;gap:6px;padding:8px 14px;flex-wrap:wrap;border-top:1px solid var(--border);background:rgba(255,255,255,0.6)}
-.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-size:11px;font-weight:600;cursor:pointer;background:#fff;color:var(--text-sec);font-family:var(--font);transition:all 0.2s}
-.chip:hover{border-color:var(--red);color:var(--red);background:rgba(227,0,15,0.04)}
-.chat-input-row{display:flex;border-top:1px solid var(--border);background:#fff}
-.chat-input-row input{flex:1;border:none;padding:13px 16px;font-size:12.5px;font-family:var(--font);outline:none}
-.chat-input-row button{padding:0 20px;border:none;background:var(--navy);color:#fff;font-weight:700;font-size:12px;cursor:pointer;font-family:var(--font);transition:background 0.2s}
-.chat-input-row button:hover{background:var(--red)}
-.esg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.esg-item{text-align:center;padding:20px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.3s ease;background:rgba(255,255,255,0.5)}
-.esg-item:hover{border-color:var(--green);box-shadow:0 4px 16px var(--green-glow);transform:translateY(-2px)}
-.esg-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px}
-.esg-val{font-size:22px;font-weight:800;margin-bottom:3px}.esg-lbl{font-size:11px;color:var(--text-sec);line-height:1.4}
-.esg-info{margin-top:16px;padding:14px 16px;background:var(--bg);border-radius:var(--radius-sm);font-size:12px;color:var(--text-sec);line-height:1.65}.esg-info strong{color:var(--text)}
-.comp-table{width:100%;border-collapse:separate;border-spacing:0}
-.comp-table thead th{padding:13px 18px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-sec);font-weight:700;background:var(--bg);border-bottom:2px solid var(--border)}
-.comp-table thead th:first-child{border-radius:var(--radius-sm) 0 0 0}.comp-table thead th:last-child{border-radius:0 var(--radius-sm) 0 0}
-.comp-table tbody td{padding:14px 18px;font-size:13.5px;border-bottom:1px solid var(--border);transition:all 0.2s}
-.comp-table tbody tr:last-child td{border-bottom:none}.comp-table tbody tr:hover{background:rgba(227,0,15,0.015)}
-.comp-table .metric-name{font-weight:600}.comp-table .val-credit{color:var(--text-sec)}.comp-table .val-leasing{font-weight:700;color:var(--green)}
-.winner{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;text-transform:uppercase;background:var(--green-bg);color:#27AE60}
-.winner-row td:first-child{border-left:3px solid var(--green)}
-.sens-table{width:100%;border-collapse:collapse;margin-top:16px}
-.sens-table th,.sens-table td{padding:10px 14px;text-align:center;font-size:12.5px;border:1px solid var(--border)}
-.sens-table th{background:var(--navy);color:#fff;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px}
-.sens-table .base-col{background:rgba(227,0,15,0.05);font-weight:700}.sens-table .pos{color:var(--green);font-weight:600}.sens-table .neg{color:var(--red);font-weight:600}
-.vat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.vat-item{padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;transition:all 0.3s;background:rgba(255,255,255,0.6)}
-.vat-item:hover{border-color:var(--red);box-shadow:var(--shadow-color)}
-.vat-name{font-size:11.5px;color:var(--text-sec);margin-bottom:5px;font-weight:500}.vat-val{font-size:21px;font-weight:800}.vat-unit{font-size:10.5px;color:var(--text-sec);margin-top:2px}
-.vat-total{margin-top:16px;padding:18px;border-radius:var(--radius-sm);background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;display:flex;justify-content:space-between;align-items:center}
-.vat-total-label{font-size:12.5px;font-weight:600;opacity:0.8}.vat-total-val{font-size:24px;font-weight:800}
-.code-editor{background:#1E1E2E;border-radius:var(--radius);overflow:hidden;border:1px solid #313244;box-shadow:var(--shadow-lg)}
-.code-titlebar{display:flex;align-items:center;gap:7px;padding:11px 16px;background:#181825;border-bottom:1px solid #313244}
-.code-dot{width:11px;height:11px;border-radius:50%}.code-dot.r{background:#F38BA8}.code-dot.y{background:#F9E2AF}.code-dot.g{background:#A6E3A1}
-.code-titlebar span{margin-left:10px;font-size:11.5px;color:#6C7086;font-weight:500}
-.code-body{padding:20px;overflow-x:auto;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;font-size:12.5px;line-height:1.8;color:#CDD6F4;counter-reset:line}
-.code-body .line{display:block;padding-left:45px;position:relative;white-space:pre}
-.code-body .line::before{counter-increment:line;content:counter(line);position:absolute;left:0;width:30px;text-align:right;color:#45475A;font-size:11px}
-.kw{color:#CBA6F7}.fn{color:#89B4FA}.st{color:#A6E3A1}.nm{color:#FAB387}.cm{color:#6C7086;font-style:italic}.op{color:#89DCEB}.vr{color:#F9E2AF}
-.flow-diagram{display:flex;align-items:center;justify-content:center;gap:0;margin:24px 0 8px;flex-wrap:wrap}
-.flow-step{display:flex;flex-direction:column;align-items:center;padding:16px 20px;border-radius:var(--radius-sm);min-width:130px;text-align:center;transition:all 0.3s}
-.flow-step:hover{transform:translateY(-3px)}.flow-step .flow-icon{font-size:26px;margin-bottom:8px}.flow-step .flow-title{font-size:12px;font-weight:700;margin-bottom:2px}.flow-step .flow-desc{font-size:10px;color:var(--text-sec)}
-.flow-step.s1{background:var(--blue-bg);border:1px solid rgba(59,130,246,0.2)}
-.flow-step.s2{background:var(--amber-bg);border:1px solid rgba(245,158,11,0.2)}
-.flow-step.s3{background:var(--green-bg);border:1px solid rgba(46,204,113,0.2)}
-.flow-step.s4{background:var(--red-glow);border:1px solid rgba(227,0,15,0.15)}
-.flow-arrow{font-size:20px;color:var(--text-sec);margin:0 6px}
-.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
-.tech-card{padding:20px;border-radius:var(--radius-sm);border:1px solid var(--border);text-align:center;transition:all 0.3s}
-.tech-card:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-2px)}
-.tech-card .tc-icon{font-size:26px;margin-bottom:8px}.tech-card h4{font-size:13px;font-weight:700;margin-bottom:4px}.tech-card p{font-size:11.5px;color:var(--text-sec);line-height:1.5}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#D1D5DB;border-radius:3px}
+/* ================================================
+   1. CORE VARIABLES & ADVANCED RESET (Dark/Light)
+   ================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+    --red: #E3000F; --red-hover: #C5000D; --red-glow: rgba(227,0,15,0.15);
+    --navy: #1A1C2C; --navy-light: #2A2D45; --navy-glow: rgba(26,28,44,0.15);
+    --green: #10B981; --green-bg: rgba(16,185,129,0.12);
+    --amber: #F59E0B; --amber-bg: rgba(245,158,11,0.12);
+    --blue: #3B82F6; --blue-bg: rgba(59,130,246,0.12);
+    
+    /* Default Light Theme */
+    --bg-main: #F1F5F9; --bg-alt: #F8FAFC; 
+    --card: #ffffff; --card-border: rgba(226, 232, 240, 0.8);
+    --text: #0F172A; --text-sec: #64748B;
+    --glass: rgba(255, 255, 255, 0.8);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.02);
+    --shadow: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.08);
+
+    --radius: 20px; --radius-sm: 12px; --radius-xs: 8px;
+    --sidebar-w: 300px;
+    --font: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+body.dark-mode {
+    --bg-main: #0F172A; --bg-alt: #0B1121;
+    --card: #1E293B; --card-border: rgba(255, 255, 255, 0.08);
+    --text: #F8FAFC; --text-sec: #94A3B8;
+    --glass: rgba(30, 41, 59, 0.8);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+    --shadow: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 12px 32px rgba(0,0,0,0.6);
+}
+
+body { font-family: var(--font); background: var(--bg-main); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 14px; line-height: 1.6; letter-spacing: -0.01em; transition: background 0.3s, color 0.3s; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+.dark-mode ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* ================================================
+   2. SIDEBAR NAVIGATION 
+   ================================================ */
+.sidebar { width: var(--sidebar-w); background: var(--navy); display: flex; flex-direction: column; z-index: 100; transition: all 0.4s; box-shadow: 4px 0 24px rgba(0,0,0,0.15); border-right: 1px solid rgba(255,255,255,0.05); }
+.sidebar-brand { padding: 32px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 100%); }
+.logo-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+.logo-dot { width: 42px; height: 42px; background: linear-gradient(135deg, var(--red), #FF6B6B); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; color: #fff; box-shadow: 0 4px 20px rgba(227,0,15,0.4); text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.sidebar-brand h2 { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.sidebar-brand p { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; display: inline-block; }
+.sidebar-nav { padding: 24px 16px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.nav-group { font-size: 10px; text-transform: uppercase; color: rgba(255,255,255,0.3); font-weight: 800; letter-spacing: 1.2px; margin: 12px 0 4px 12px; }
+.nav-btn { display: flex; align-items: center; gap: 14px; width: 100%; background: transparent; border: none; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.3s; text-align: left; font-family: var(--font); position: relative; overflow: hidden; }
+.nav-btn svg { width: 18px; height: 18px; opacity: 0.6; flex-shrink: 0; transition: 0.3s; }
+.nav-btn:hover { background: rgba(255,255,255,0.06); color: #fff; transform: translateX(4px); }
+.nav-btn:hover svg { opacity: 1; transform: scale(1.15) rotate(5deg); }
+.nav-btn.active { background: linear-gradient(90deg, rgba(227,0,15,0.15), transparent); color: #fff; box-shadow: inset 4px 0 0 var(--red); }
+.nav-btn.active svg { opacity: 1; color: #FF6B6B; }
+.sidebar-footer { padding: 24px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: rgba(255,255,255,0.4); background: rgba(0,0,0,0.1); }
+.sidebar-footer strong { color: #fff; font-weight: 700; display: block; margin-bottom: 2px; }
+
+/* ================================================
+   3. MAIN WRAPPER & HEADER
+   ================================================ */
+.main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+.top-bar { background: var(--glass); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid var(--card-border); padding: 16px 40px; display: flex; align-items: center; justify-content: space-between; z-index: 10; box-shadow: var(--shadow-sm); transition: 0.3s; }
+.top-bar h1 { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; color: var(--navy); }
+.dark-mode .top-bar h1 { color: #fff; }
+.top-bar-right { display: flex; align-items: center; gap: 20px; }
+
+/* Theme Toggle */
+.theme-btn { background: var(--bg-alt); border: 1px solid var(--card-border); color: var(--text); padding: 8px 12px; border-radius: var(--radius-xs); cursor: pointer; font-size: 16px; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+.theme-btn:hover { background: var(--card); border-color: var(--blue); }
+
+.action-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); transition: 0.3s; box-shadow: var(--shadow-sm); }
+.action-btn:hover { border-color: var(--navy); color: var(--navy); background: var(--bg-alt); transform: translateY(-2px); box-shadow: var(--shadow); }
+.dark-mode .action-btn:hover { border-color: #fff; color: #fff; }
+.badge { background: linear-gradient(135deg, var(--red), #FF4136); color: #fff; padding: 6px 14px; border-radius: 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 12px rgba(227,0,15,0.3); }
+
+/* Language Switch */
+.lang-switch { display: flex; background: var(--bg-alt); border-radius: 10px; padding: 4px; border: 1px solid var(--card-border); }
+.lang-btn { padding: 6px 16px; border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: var(--text-sec); transition: 0.3s; font-family: var(--font); }
+.lang-btn.active { background: var(--card); color: var(--red); box-shadow: var(--shadow-sm); }
+
+.content-scroll { flex: 1; overflow-y: auto; padding: 32px 40px 100px; scroll-behavior: smooth; }
+.tab-panel { display: none; animation: slideFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px); }
+.tab-panel.active { display: block; opacity: 1; transform: translateY(0); }
+@keyframes slideFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+/* ================================================
+   4. GRID & CARDS 
+   ================================================ */
+.dash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 24px; }
+.dash-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 24px; }
+.card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); transition: 0.4s; position: relative; z-index: 1; }
+.card:hover { transform: translateY(-4px); border-color: rgba(227,0,15,0.3); box-shadow: var(--shadow-lg); }
+.card.span-2 { grid-column: span 2; }
+.card.span-3 { grid-column: span 3; }
+.card-hdr { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--card-border); }
+.card-title-group h3 { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.card-title-group p { font-size: 12.5px; color: var(--text-sec); font-weight: 500; }
+
+/* ================================================
+   5. CUSTOM DROPDOWNS & FORMS
+   ================================================ */
+.fg { margin-bottom: 20px; position: relative; }
+.fg label { display: block; margin-bottom: 8px; font-size: 12.5px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Custom Select Dropdown UI */
+.custom-select { position: relative; font-family: var(--font); width: 100%; }
+.custom-select select { display: none; /* Hide original */ }
+.select-selected { background-color: var(--bg-alt); border: 2px solid var(--card-border); border-radius: var(--radius-sm); padding: 14px 20px; color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+.select-selected:hover { border-color: var(--blue); }
+.select-selected:after { content: ""; width: 0; height: 0; border: 6px solid transparent; border-color: var(--text-sec) transparent transparent transparent; margin-top: 6px; transition: 0.3s; }
+.select-selected.select-arrow-active { border-color: var(--blue); box-shadow: 0 0 0 4px var(--blue-bg); }
+.select-selected.select-arrow-active:after { border-color: transparent transparent var(--blue) transparent; margin-top: -6px; }
+.select-items { position: absolute; background-color: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius-sm); box-shadow: var(--shadow-lg); top: 110%; left: 0; right: 0; z-index: 99; max-height: 250px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 4px; }
+.select-hide { display: none; }
+.select-items div { padding: 12px 16px; cursor: pointer; border-radius: var(--radius-xs); color: var(--text); font-size: 14px; font-weight: 500; transition: 0.2s; }
+.select-items div:hover, .same-as-selected { background-color: var(--bg-alt); color: var(--red); font-weight: 700; }
+
+/* Sliders */
+.slider-group { margin-bottom: 24px; }
+.slider-header { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13.5px; font-weight: 700; color: var(--text); }
+.slider-val { background: var(--bg-alt); padding: 2px 10px; border-radius: 12px; color: var(--red); border: 1px solid var(--card-border); }
+.custom-slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 4px; background: var(--card-border); outline: none; }
+.custom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 3px solid var(--red); cursor: pointer; box-shadow: 0 2px 8px rgba(227,0,15,0.4); transition: 0.2s; }
+.custom-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+/* ================================================
+   6. TABLES & DATA VISUALIZATION
+   ================================================ */
+.table-wrapper { overflow-x: auto; width: 100%; border-radius: var(--radius-sm); border: 1px solid var(--card-border); }
+.data-table { width: 100%; border-collapse: collapse; min-width: 800px; background: var(--card); }
+.data-table th { padding: 16px 20px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--text-sec); background: var(--bg-alt); border-bottom: 2px solid var(--card-border); font-weight: 800; }
+.data-table td { padding: 16px 20px; font-size: 14px; border-bottom: 1px solid var(--card-border); font-weight: 500; color: var(--text); }
+.data-table tr:hover td { background: var(--bg-alt); }
+.highlight-td { color: var(--green); font-weight: 800; background: var(--green-bg); }
+.warning-td { color: var(--red); font-weight: 800; background: var(--red-glow); }
+
+/* KPIs */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+.kpi-card { background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); position: relative; overflow: hidden; transition: 0.4s; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--card-border), transparent); transition: 0.4s; }
+.kpi-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: rgba(227,0,15,0.2); }
+.kpi-card:hover::before { background: linear-gradient(90deg, var(--red), #FF4136); }
+.kpi-lbl { font-size: 12px; text-transform: uppercase; color: var(--text-sec); font-weight: 800; margin-bottom: 12px; }
+.kpi-val { font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+.kpi-sub { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--green-bg); border-radius: 6px; font-size: 11.5px; font-weight: 700; color: #059669; }
+
+/* Alerts */
+.alert-box { border-left: 5px solid; padding: 20px 24px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: 24px; background: var(--card); box-shadow: var(--shadow); }
+.alert-box.danger { border-color: var(--red); background: var(--red-glow); }
+.alert-box.warning { border-color: var(--amber); background: var(--amber-bg); }
+.alert-box.success { border-color: var(--green); background: var(--green-bg); }
+.alert-title { font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: var(--text); }
+.alert-text { font-size: 13.5px; color: var(--text); line-height: 1.6; font-weight: 500; }
+
+/* ================================================
+   7. SPECIFIC COMPONENTS (Architecture Grid, Chat)
+   ================================================ */
+/* DC Architecture Grid */
+.hw-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.hw-card { background: var(--bg-alt); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 20px; text-align: center; transition: 0.3s; }
+.hw-card:hover { transform: translateY(-4px); border-color: var(--blue); box-shadow: var(--shadow-md); background: var(--card); }
+.hw-icon { font-size: 32px; margin-bottom: 12px; }
+.hw-title { font-weight: 800; color: var(--text); font-size: 14px; }
+.hw-qty { font-size: 11px; color: var(--text-sec); font-weight: 700; margin: 4px 0 8px; text-transform: uppercase; }
+.hw-cost { font-size: 16px; font-weight: 900; color: var(--red); }
+
+/* DP Flowchart */
+.dp-container { padding: 32px; background: var(--bg-alt); border-radius: var(--radius); border: 1px solid var(--card-border); }
+.dp-controls { display: flex; gap: 16px; margin-bottom: 24px; }
+.dp-btn { flex: 1; padding: 14px; font-size: 14px; font-weight: 800; border-radius: var(--radius-xs); cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+.dp-btn.primary { background: var(--blue); color: #fff; border: none; }
+.dp-btn.secondary { background: var(--card); color: var(--text); border: 2px solid var(--card-border); }
+.dp-flow { display: flex; justify-content: space-between; position: relative; padding: 40px 20px; }
+.dp-flow::before { content: ''; position: absolute; top: 50%; left: 40px; right: 40px; height: 4px; background: var(--card-border); z-index: 1; transform: translateY(-50%); }
+.dp-node { position: relative; z-index: 2; background: var(--card); border: 4px solid var(--card-border); width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; color: var(--text); box-shadow: var(--shadow); }
+.dp-node span { font-size: 10px; font-weight: 800; color: var(--text-sec); margin-top: 4px; }
+.dp-node.action { border-color: var(--blue); color: var(--blue); transform: scale(1.15); box-shadow: 0 8px 24px var(--blue-bg); }
+
+/* AI Chatbot */
+.chat-container { display: flex; flex-direction: column; height: 650px; background: var(--card); border-radius: var(--radius); border: 1px solid var(--card-border); box-shadow: var(--shadow-lg); overflow: hidden; }
+.chat-history { flex: 1; padding: 32px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: var(--bg-alt); }
+.chat-msg { max-width: 80%; padding: 16px 24px; border-radius: 20px; font-size: 14.5px; font-weight: 500; animation: slideFadeUp 0.3s ease; }
+.msg-bot { background: var(--card); border: 1px solid var(--card-border); border-bottom-left-radius: 4px; align-self: flex-start; color: var(--text); }
+.msg-user { background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+.chat-chips { padding: 16px 24px; background: var(--card); border-top: 1px solid var(--card-border); display: flex; gap: 12px; overflow-x: auto; }
+.chat-chip { padding: 10px 20px; background: var(--bg-alt); border: 1px solid var(--card-border); border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; color: var(--text); transition: 0.3s; white-space: nowrap; }
+.chat-chip:hover { border-color: var(--red); color: var(--red); background: var(--red-glow); }
+.chat-input { display: flex; padding: 20px 24px; background: var(--card); border-top: 1px solid var(--card-border); }
+.chat-input input { flex: 1; padding: 16px 24px; border: 2px solid var(--card-border); border-radius: 30px; font-size: 14.5px; background: var(--bg-alt); color: var(--text); outline: none; font-family: var(--font); transition: 0.3s; }
+.chat-input input:focus { border-color: var(--navy); }
+.chat-input button { margin-left: 16px; padding: 0 32px; background: var(--red); color: #fff; border: none; border-radius: 30px; font-weight: 800; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 16px var(--red-glow); }
+
+/* Python Code Block */
+.code-block { background: #181825; border-radius: var(--radius-sm); overflow: hidden; margin-top: 16px; border: 1px solid #313244; }
+.code-header { background: #11111B; padding: 12px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #313244; }
+.code-dot { width: 12px; height: 12px; border-radius: 50%; }
+.code-dot.r { background: #F38BA8; } .code-dot.y { background: #F9E2AF; } .code-dot.g { background: #A6E3A1; }
+.code-title { margin-left: 10px; color: #A6ADC8; font-size: 13px; font-family: var(--font-mono); }
+.code-content { padding: 24px; color: #CDD6F4; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; overflow-x: auto; }
+.code-content .kw { color: #CBA6F7; } .code-content .fn { color: #89B4FA; } .code-content .st { color: #A6E3A1; } .code-content .nm { color: #FAB387; }
+
+/* PDF Output Helper */
+.pdf-container { background: var(--bg-main); padding: 20px; }
+
+@media(max-width: 1280px) {
+    .hw-grid { grid-template-columns: repeat(2, 1fr); }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
+
+<!-- 1. SIDEBAR -->
 <aside class="sidebar">
-<div class="sidebar-brand">
-<div class="logo-row"><div class="logo-dot">V</div><h2>Viva Armenia</h2></div>
-<p data-i18n="brandSub">Strategic Dashboard</p>
-</div>
-<nav class="sidebar-nav">
-<div class="nav-label" data-i18n="navLabel">Analytics</div>
-<button class="nav-btn active" data-tab="tab1">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-<span data-i18n="nav1">Executive Dashboard</span></button>
-<button class="nav-btn" data-tab="tab2">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-<span data-i18n="nav2">Financial Analytics</span></button>
-<button class="nav-btn" data-tab="tab3">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-<span data-i18n="nav3">Tech &amp; Algorithms</span></button>
-</nav>
-<div class="sidebar-footer" data-i18n="footer">Master&rsquo;s Thesis &mdash; Economics<br>Raffi Poghosyan &bull; NPUA 2026</div>
+    <div class="sidebar-brand">
+        <div class="logo-row"><div class="logo-dot">V</div><h2>Viva Armenia</h2></div>
+        <p data-i18n="s_sub">Strategic Dashboard V6.0</p>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-group" data-i18n="ng_1">Core Analytics</div>
+        <button class="nav-btn active" data-tab="tab1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span data-i18n="n_1">1. Executive Center</span>
+        </button>
+        <button class="nav-btn" data-tab="tab2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span data-i18n="n_2">2. Financial Health</span>
+        </button>
+        <button class="nav-btn" data-tab="tab3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span data-i18n="n_3">3. WACC & Structure</span>
+        </button>
+        <button class="nav-btn" data-tab="tab4">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span data-i18n="n_4">4. Financial Leverage (DFL)</span>
+        </button>
+
+        <div class="nav-group" data-i18n="ng_2">Strategic Projects</div>
+        <button class="nav-btn" data-tab="tab5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>
+            <span data-i18n="n_5">5. Core: Data Center</span>
+        </button>
+        <button class="nav-btn" data-tab="tab6">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span data-i18n="n_6">6. Credit vs Leasing</span>
+        </button>
+        <button class="nav-btn" data-tab="tab7">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span data-i18n="n_7">7. Dynamic Prog.</span>
+        </button>
+
+        <div class="nav-group" data-i18n="ng_3">Sustainability & Risk</div>
+        <button class="nav-btn" data-tab="tab8">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            <span data-i18n="n_8">8. Environmental (5G)</span>
+        </button>
+        <button class="nav-btn" data-tab="tab9">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span data-i18n="n_9">9. Safety Economics</span>
+        </button>
+        <button class="nav-btn" data-tab="tab10">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span data-i18n="n_10">10. Risk Management</span>
+        </button>
+
+        <div class="nav-group" data-i18n="ng_4">Synthesis</div>
+        <button class="nav-btn" data-tab="tab11">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span data-i18n="n_11">11. Python Algorithms</span>
+        </button>
+        <button class="nav-btn" data-tab="tab12">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+            <span data-i18n="n_12">12. Final Conclusion</span>
+        </button>
+        <button class="nav-btn" data-tab="tab13">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span data-i18n="n_13">13. AI Advisor</span>
+        </button>
+    </nav>
 </aside>
-<div class="main-wrapper">
-<header class="top-bar">
-<h1 data-i18n="topTitle">Data Center Investment Analysis</h1>
-<div class="top-bar-right">
-<div class="lang-switch">
-<button class="lang-btn" data-lang="am">&#1344;&#1377;&#1397;</button>
-<button class="lang-btn" data-lang="ru">&#1056;&#1091;&#1089;</button>
-<button class="lang-btn active" data-lang="en">Eng</button>
-</div>
-<span class="badge">THESIS v2.0</span>
-</div>
-</header>
-<div class="content-scroll">
-<!-- TAB 1 -->
-<div class="tab-panel active" id="tab1">
-<div class="kpi-row">
-<div class="kpi-card"><div class="kpi-label" data-i18n="kpiRoiLabel">Project ROI</div><div class="kpi-value" id="kpiRoi">49.9%</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiRoiSub">High return via leasing</span></div></div>
-<div class="kpi-card"><div class="kpi-label" data-i18n="kpiNpvLabel">NPV (Net Present Value)</div><div class="kpi-value" id="kpiNpv">6,506M</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span id="kpiNpvSub">AMD &bull; r = 10%</span></div></div>
-<div class="kpi-card"><div class="kpi-label" data-i18n="kpiPayLabel">Payback Period</div><div class="kpi-value" id="kpiPayback">2.47 Yrs</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiPaySub">Below 3-year target</span></div></div>
-<div class="kpi-card"><div class="kpi-label" data-i18n="kpiRoeLabel">Company ROE</div><div class="kpi-value">24% &rarr; 36%</div><div class="kpi-sub"><span class="arrow">&uarr;</span><span data-i18n="kpiRoeSub">+12pp improvement</span></div></div>
-</div>
-<div class="dash-grid">
-<div class="card">
-<div class="card-hdr"><h3 data-i18n="simTitle">Investment Simulator</h3><span class="card-tag" data-i18n="simTag">Interactive</span></div>
-<div class="fg"><label data-i18n="simFund">Funding Strategy</label><select id="simMode" class="fc"><option value="leasing" data-i18n-opt="simLeasing">Financial Leasing (CAPEX: 4,230M AMD)</option><option value="credit" data-i18n-opt="simCredit">Bank Credit (CAPEX: 9,124M AMD)</option></select></div>
-<div class="fg"><label><span data-i18n="simRate">Discount Rate (r)</span></label><div class="slider-row"><input type="range" id="simRate" min="5" max="25" value="10" step="1"><div class="slider-val" id="rateDisplay">10%</div></div></div>
-<div class="fg"><label><span data-i18n="simAmount">Investor Contribution</span> <span data-i18n="simUnit">(Millions AMD)</span></label><input type="number" id="simAmount" class="fc" value="500" min="10" step="10"></div>
-<div class="result-box"><div class="result-row"><span data-i18n="resShare">Ownership Share</span><strong id="resShare">11.82%</strong></div><div class="result-row"><span data-i18n="resProfit">Expected Profit (Year 5)</span><strong id="resProfit">310.6M AMD</strong></div></div>
-<button class="btn-primary" id="btnSave" disabled data-i18n="btnSave">Save Configuration</button>
-</div>
-<div class="card">
-<div class="card-hdr"><h3 data-i18n="esgTitle">ESG &amp; Safety Radar</h3><span class="card-tag" data-i18n="esgTag">Impact</span></div>
-<div class="esg-grid">
-<div class="esg-item"><div class="esg-icon" style="background:var(--green-bg);color:var(--green);">&#127807;</div><div class="esg-val" style="color:var(--green);">-25t</div><div class="esg-lbl" data-i18n="esgCo2">CO&#8322; Reduction<br>per Year</div></div>
-<div class="esg-item"><div class="esg-icon" style="background:var(--amber-bg);color:var(--amber);">&#9728;&#65039;</div><div class="esg-val" style="color:#E67E22;">30%</div><div class="esg-lbl" data-i18n="esgSolar">Energy Saved<br>via Solar Panels</div></div>
-<div class="esg-item"><div class="esg-icon" style="background:var(--red-glow);color:var(--red);">&#128737;</div><div class="esg-val" style="color:var(--red);">40M</div><div class="esg-lbl" data-i18n="esgFines">AMD Fines<br>Prevented Annually</div></div>
-</div>
-<div class="esg-info" data-i18n="esgInfo"><strong>Safety Economics:</strong> The Eos model (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) proves that fire suppression, UPS systems, and PPE investments yield a net positive return by eliminating regulatory penalties and operational downtime.</div>
-</div>
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="chartTitle">Cumulative Cash Flows &mdash; 5-Year Projection</h3><span class="card-tag" id="chartTag">Showing: Financial Leasing</span></div>
-<div class="chart-wrap"><canvas id="cashFlowChart"></canvas></div>
-</div>
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="chatTitle">AI Strategic Assistant</h3><span class="card-tag" data-i18n="chatTag">Thesis Q&amp;A</span></div>
-<div class="chat-container">
-<div class="chat-messages" id="chatMessages"><div class="chat-msg bot" data-i18n="chatWelcome">Hello! I am the Viva Armenia project advisor. Ask me about leasing vs. credit, ESG impact, safety economics, or the Python methodology.</div></div>
-<div class="chat-chips" id="chatChips"></div>
-<div class="chat-input-row"><input type="text" id="chatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Ask about leasing, credit, ESG, safety, NPV..."><button id="btnChat" data-i18n="chatSend">Send</button></div>
-</div>
-</div>
-</div>
-</div>
-<!-- TAB 2 -->
-<div class="tab-panel" id="tab2">
-<div class="dash-grid">
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="compTitle">Financing Strategy Comparison</h3><span class="card-tag" data-i18n="compTag">Credit vs Leasing</span></div>
-<table class="comp-table"><thead><tr><th data-i18n="thMetric">Metric</th><th data-i18n="thCredit">Bank Credit</th><th data-i18n="thLeasing">Financial Leasing</th><th data-i18n="thAdv">Advantage</th></tr></thead><tbody id="compBody"></tbody></table>
-</div>
-<div class="card">
-<div class="card-hdr"><h3 data-i18n="sensTitle">IRR Sensitivity Map</h3><span class="card-tag" data-i18n="sensTag">NPV vs Discount Rate</span></div>
-<table class="sens-table" id="sensTable"></table>
-</div>
-<div class="card">
-<div class="card-hdr"><h3 data-i18n="vatTitle">VAT / Net Amount Converter</h3><span class="card-tag" data-i18n="vatTag">B2B Revenue</span></div>
-<div class="fg"><label data-i18n="vatLabel">Display Mode</label><select id="vatMode" class="fc"><option value="net" data-i18n-opt="vatNet">Net Value (Excluding VAT)</option><option value="gross" data-i18n-opt="vatGross">Gross Value (+20% VAT)</option></select></div>
-<div class="vat-grid">
-<div class="vat-item"><div class="vat-name" data-i18n="svcIaas">IaaS Cloud Services</div><div class="vat-val" id="vIaas">2,400</div><div class="vat-unit" data-i18n="vatUnit">M AMD / Year</div></div>
-<div class="vat-item"><div class="vat-name" data-i18n="svcVps">Virtual Servers (VPS)</div><div class="vat-val" id="vVps">1,500</div><div class="vat-unit" data-i18n="vatUnit2">M AMD / Year</div></div>
-<div class="vat-item"><div class="vat-name" data-i18n="svcStorage">Storage &amp; Backup</div><div class="vat-val" id="vStorage">2,100</div><div class="vat-unit" data-i18n="vatUnit3">M AMD / Year</div></div>
-<div class="vat-item"><div class="vat-name" data-i18n="svcColo">Colocation Services</div><div class="vat-val" id="vColo">800</div><div class="vat-unit" data-i18n="vatUnit4">M AMD / Year</div></div>
-</div>
-<div class="vat-total"><span class="vat-total-label" data-i18n="vatTotal">Total Annual Revenue</span><span class="vat-total-val" id="vTotal">6,800 M AMD</span></div>
-</div>
-</div>
-</div>
-<!-- TAB 3 -->
-<div class="tab-panel" id="tab3">
-<div class="dash-grid">
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="codeTitle">Financial Modeling &mdash; Python Source Code</h3><span class="card-tag">numpy_financial &bull; pandas</span></div>
-<div class="code-editor"><div class="code-titlebar"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span>financial_model.py</span></div>
-<div class="code-body">
-<span class="line"><span class="kw">import</span> numpy <span class="kw">as</span> np</span>
-<span class="line"><span class="kw">import</span> numpy_financial <span class="kw">as</span> npf</span>
-<span class="line"><span class="kw">import</span> pandas <span class="kw">as</span> pd</span>
-<span class="line"></span>
-<span class="line"><span class="cm"># &#x2500;&#x2500; Define annual cash flows &#x2500;&#x2500;</span></span>
-<span class="line"><span class="vr">leasing_cf</span> <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">-4230</span>, <span class="nm">2470</span>, <span class="nm">2670</span>, <span class="nm">2870</span>, <span class="nm">3070</span>, <span class="nm">3270</span>])</span>
-<span class="line"><span class="vr">credit_cf</span>  <span class="op">=</span> np.<span class="fn">array</span>([<span class="nm">-9124</span>, <span class="nm">2265</span>, <span class="nm">2465</span>, <span class="nm">2665</span>, <span class="nm">2865</span>, <span class="nm">3065</span>])</span>
-<span class="line"></span>
-<span class="line"><span class="cm"># &#x2500;&#x2500; NPV at r = 10% &#x2500;&#x2500;</span></span>
-<span class="line"><span class="vr">r</span> <span class="op">=</span> <span class="nm">0.10</span></span>
-<span class="line"><span class="vr">npv_leasing</span> <span class="op">=</span> npf.<span class="fn">npv</span>(r, leasing_cf)  <span class="cm"># &#x2192; 6,506M AMD</span></span>
-<span class="line"><span class="vr">npv_credit</span>  <span class="op">=</span> npf.<span class="fn">npv</span>(r, credit_cf)   <span class="cm"># &#x2192;   834M AMD</span></span>
-<span class="line"></span>
-<span class="line"><span class="cm"># &#x2500;&#x2500; Internal Rate of Return &#x2500;&#x2500;</span></span>
-<span class="line"><span class="vr">irr_leasing</span> <span class="op">=</span> npf.<span class="fn">irr</span>(leasing_cf)  <span class="cm"># &#x2192; 42.70%</span></span>
-<span class="line"><span class="vr">irr_credit</span>  <span class="op">=</span> npf.<span class="fn">irr</span>(credit_cf)   <span class="cm"># &#x2192; 12.38%</span></span>
-<span class="line"></span>
-<span class="line"><span class="cm"># &#x2500;&#x2500; Sensitivity sweep &#x2500;&#x2500;</span></span>
-<span class="line"><span class="vr">rates</span> <span class="op">=</span> np.<span class="fn">arange</span>(<span class="nm">0.05</span>, <span class="nm">0.26</span>, <span class="nm">0.01</span>)</span>
-<span class="line"><span class="vr">sensitivity</span> <span class="op">=</span> pd.<span class="fn">DataFrame</span>({</span>
-<span class="line">    <span class="st">'Rate'</span>: rates,</span>
-<span class="line">    <span class="st">'NPV_Leasing'</span>: [npf.<span class="fn">npv</span>(r, leasing_cf) <span class="kw">for</span> r <span class="kw">in</span> rates],</span>
-<span class="line">    <span class="st">'NPV_Credit'</span>:  [npf.<span class="fn">npv</span>(r, credit_cf)  <span class="kw">for</span> r <span class="kw">in</span> rates],</span>
-<span class="line">})</span>
-<span class="line"></span>
-<span class="line"><span class="cm"># &#x2500;&#x2500; Comparison table &#x2500;&#x2500;</span></span>
-<span class="line"><span class="vr">result</span> <span class="op">=</span> pd.<span class="fn">DataFrame</span>({</span>
-<span class="line">    <span class="st">'Metric'</span>:  [<span class="st">'NPV'</span>, <span class="st">'IRR'</span>, <span class="st">'Payback'</span>, <span class="st">'ROI'</span>],</span>
-<span class="line">    <span class="st">'Leasing'</span>: [<span class="fn">f</span><span class="st">'{npv_leasing:,.0f}'</span>, <span class="fn">f</span><span class="st">'{irr_leasing*100:.2f}%'</span>, <span class="st">'2.47y'</span>, <span class="st">'49.9%'</span>],</span>
-<span class="line">    <span class="st">'Credit'</span>:  [<span class="fn">f</span><span class="st">'{npv_credit:,.0f}'</span>,  <span class="fn">f</span><span class="st">'{irr_credit*100:.2f}%'</span>,  <span class="st">'4.69y'</span>, <span class="st">'22.5%'</span>],</span>
-<span class="line">})</span>
-<span class="line"><span class="fn">print</span>(result.<span class="fn">to_string</span>(index<span class="op">=</span><span class="kw">False</span>))</span>
-</div></div>
-</div>
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="flowTitle">Algorithm Automation Flow</h3><span class="card-tag" data-i18n="flowTag">Pipeline</span></div>
-<div class="flow-diagram">
-<div class="flow-step s1"><div class="flow-icon">&#128202;</div><div class="flow-title" data-i18n="flow1t">Raw Data</div><div class="flow-desc" data-i18n="flow1d">Excel / CSV inputs</div></div>
-<div class="flow-arrow">&#10148;</div>
-<div class="flow-step s2"><div class="flow-icon">&#128013;</div><div class="flow-title" data-i18n="flow2t">Python / Pandas</div><div class="flow-desc" data-i18n="flow2d">Data cleaning &amp; structuring</div></div>
-<div class="flow-arrow">&#10148;</div>
-<div class="flow-step s3"><div class="flow-icon">&#9889;</div><div class="flow-title" data-i18n="flow3t">numpy_financial</div><div class="flow-desc" data-i18n="flow3d">NPV, IRR computation</div></div>
-<div class="flow-arrow">&#10148;</div>
-<div class="flow-step s4"><div class="flow-icon">&#128200;</div><div class="flow-title" data-i18n="flow4t">Dashboard</div><div class="flow-desc" data-i18n="flow4d">Chart.js visualization</div></div>
-</div>
-</div>
-<div class="card span-2">
-<div class="card-hdr"><h3 data-i18n="methTitle">Methodology &amp; Automation</h3><span class="card-tag" data-i18n="methTag">Approach</span></div>
-<p style="font-size:13px;line-height:1.8;max-width:900px;color:var(--text);" data-i18n="methDesc">All financial projections were computed using Python 3.11 with automated scripts, ensuring reproducibility and eliminating human calculation errors across 42 scenario combinations.</p>
-<div class="tech-grid">
-<div class="tech-card"><div class="tc-icon">&#128200;</div><h4>numpy_financial</h4><p data-i18n="tech1">Industry-standard NPV and IRR computations with sensitivity sweeps across 21 discount rates.</p></div>
-<div class="tech-card"><div class="tc-icon">&#128202;</div><h4>pandas DataFrames</h4><p data-i18n="tech2">Structured comparison tables, automated VAT conversions, and multi-year cash flow aggregation.</p></div>
-<div class="tech-card"><div class="tc-icon">&#9889;</div><h4 data-i18n="tech3h">Dynamic Programming</h4><p data-i18n="tech3">Optimized scenario analysis evaluating 42 parameter combinations across both financing models.</p></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+
+<!-- 2. MAIN WRAPPER -->
+<main class="main-wrapper">
+    <header class="top-bar">
+        <h1 data-i18n="h_title">Strategic Financial & Operations Dashboard V6.0</h1>
+        <div class="top-bar-right">
+            <button class="theme-btn" id="themeToggle">🌙</button>
+            <div class="lang-switch">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="am">AM</button>
+                <button class="lang-btn" data-lang="ru">RU</button>
+            </div>
+            <button class="action-btn primary" onclick="exportToPDF()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span data-i18n="btn_export">Export PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="content-scroll" id="pdfArea">
+        
+        <!-- TAB 1: EXECUTIVE CENTER -->
+        <div id="tab1" class="tab-panel active">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-lbl" data-i18n="k1_l">Project ROI (Leasing)</div>
+                    <div class="kpi-val">49.9%</div>
+                    <div class="kpi-sub"><span data-i18n="k1_s">Outperforms Credit (22.5%)</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-lbl" data-i18n="k2_l">Net Present Value (NPV)</div>
+                    <div class="kpi-val" id="kpiNpvVal">6,506M</div>
+                    <div class="kpi-sub"><span data-i18n="k2_s">Calculated at r=10%</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-lbl" data-i18n="k3_l">Payback Period</div>
+                    <div class="kpi-val">2.47y</div>
+                    <div class="kpi-sub"><span data-i18n="k3_s">Rapid Break-even</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-lbl" data-i18n="k4_l">Corporate ROE (2024)</div>
+                    <div class="kpi-val">36.0%</div>
+                    <div class="kpi-sub"><span data-i18n="k4_s">Massive Growth from 24%</span></div>
+                </div>
+            </div>
+            
+            <div class="dash-grid">
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group">
+                            <h3 data-i18n="t1_c1_t">Investment Simulator</h3>
+                            <p data-i18n="t1_c1_d">Adjust parameters to see real-time impact.</p>
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label data-i18n="t1_f1">Funding Strategy</label>
+                        <div class="custom-select">
+                            <select id="simStrategy">
+                                <option value="leasing" data-i18n="t1_o1">Financial Leasing (CAPEX: 4,230M)</option>
+                                <option value="credit" data-i18n="t1_o2">Bank Credit (CAPEX: 9,124M)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label data-i18n="t1_f2">Discount Rate (r)</label>
+                        <div class="custom-select">
+                            <select id="simRate">
+                                <option value="5">5% (Optimistic)</option>
+                                <option value="10" selected>10% (Base Case)</option>
+                                <option value="15">15% (Conservative)</option>
+                                <option value="20">20% (Pessimistic)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top: 24px; padding: 24px; background: var(--bg-alt); border-radius: var(--radius-sm); border: 1px solid var(--card-border);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
+                            <span style="font-weight: 700; color: var(--text-sec); font-size: 14.5px;" data-i18n="sim_npv">Calculated NPV:</span>
+                            <strong id="resNpv" style="color: var(--green); font-size: 24px; font-weight: 900;">6,506M AMD</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-weight: 700; color: var(--text-sec); font-size: 14.5px;" data-i18n="sim_irr">Calculated IRR:</span>
+                            <strong id="resIrr" style="color: var(--blue); font-size: 24px; font-weight: 900;">42.70%</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group">
+                            <h3 data-i18n="t1_c2_t">Cumulative Cash Flows</h3>
+                            <p data-i18n="t1_c2_d">5-Year Projection (Millions AMD)</p>
+                        </div>
+                    </div>
+                    <div style="height: 300px;"><canvas id="chartCF"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: FINANCIAL HEALTH -->
+        <div id="tab2" class="tab-panel">
+            <div class="alert-box danger">
+                <div class="alert-title">⚠ <span data-i18n="t2_a_t">Critical Alert: Working Capital Exhaustion</span></div>
+                <div class="alert-text" data-i18n="t2_a_d">While 2024 saw a 29% surge in Net Profit (14.9B AMD), the Working Capital violently dropped from 8.7 Billion to just 57 Million AMD. The Current Liquidity ratio hit the absolute minimum threshold of 1.00.</div>
+            </div>
+            <div class="dash-grid">
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group"><h3 data-i18n="t2_c1_t">Liquidity Ratios (2023-2024)</h3></div>
+                    </div>
+                    <div style="height: 300px;"><canvas id="chartLiq"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group"><h3 data-i18n="t2_c2_t">Activity & Efficiency Metrics</h3></div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead><tr><th data-i18n="th_metric">Metric</th><th>2023</th><th>2024</th><th data-i18n="th_trend">Trend</th></tr></thead>
+                            <tbody>
+                                <tr><td data-i18n="t2_m1">Asset Turnover</td><td>0.62</td><td class="highlight-td">0.65</td><td>+4.8%</td></tr>
+                                <tr><td data-i18n="t2_m2">Equity Turnover</td><td>1.12</td><td class="highlight-td">1.35</td><td>+20.5%</td></tr>
+                                <tr><td data-i18n="t2_m3">Creditor Days</td><td>56 Days</td><td class="highlight-td">45 Days</td><td data-i18n="t2_tr1">Faster Pay</td></tr>
+                                <tr><td data-i18n="t2_m4">Inventory Turnover</td><td>85.89</td><td class="highlight-td">114.72</td><td>+33.5%</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: WACC & CAPITAL STRUCTURE -->
+        <div id="tab3" class="tab-panel">
+            <div class="alert-box warning">
+                <div class="alert-title">📊 <span data-i18n="t3_w_t">Thesis Insight: Capital Structure Shift</span></div>
+                <div class="alert-text" data-i18n="t3_w_d">The Financial Independence Ratio has dropped from 0.55 to 0.48, showing a higher reliance on debt. Rebalancing is critical to optimize WACC.</div>
+            </div>
+            <div class="dash-grid">
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group"><h3>WACC Simulator</h3><p data-i18n="t3_sim_d">Adjust parameters to find optimal structure.</p></div>
+                    </div>
+                    
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span data-i18n="wd_l">Debt Weight (Wd)</span><span class="slider-val" id="valWd">48%</span>
+                        </div>
+                        <input type="range" class="custom-slider" id="waccWd" min="0" max="100" value="48">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span data-i18n="we_l">Equity Weight (We)</span><span class="slider-val" id="valWe">52%</span>
+                        </div>
+                        <input type="range" class="custom-slider" id="waccWe" min="0" max="100" value="52" disabled style="opacity:0.5;">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span data-i18n="kd_l">Cost of Debt (Kd)</span><span class="slider-val" id="valKd">9.0%</span>
+                        </div>
+                        <input type="range" class="custom-slider" id="waccKd" min="1" max="20" step="0.1" value="9">
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <span data-i18n="ke_l">Cost of Equity (Ke)</span><span class="slider-val" id="valKe">15.0%</span>
+                        </div>
+                        <input type="range" class="custom-slider" id="waccKe" min="5" max="30" step="0.1" value="15">
+                    </div>
+                </div>
+                <div class="card" style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="card-hdr" style="width: 100%; border:none; text-align:center;">
+                        <h3 data-i18n="t3_g_t">Real-time WACC</h3>
+                        <p data-i18n="t3_g_d">Weighted Average Cost of Capital (Tax = 18%)</p>
+                    </div>
+                    <div style="position: relative; width: 100%; max-width: 320px; height: 250px;">
+                        <canvas id="waccGauge"></canvas>
+                        <div style="position:absolute; bottom:20px; left:50%; transform:translateX(-50%); font-size:36px; font-weight:900; color:var(--text);" id="waccDisplay">11.3%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card span-2">
+                <div class="card-hdr">
+                    <div class="card-title-group"><h3 data-i18n="t3_tbl_t">Capital Structure Shifts (2023 vs 2024)</h3></div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead><tr><th data-i18n="th_metric">Metric</th><th>2023</th><th>2024</th><th data-i18n="th_eval">Evaluation</th></tr></thead>
+                        <tbody>
+                            <tr><td data-i18n="t3_m1">Financial Independence Ratio</td><td>0.55</td><td class="warning-td">0.48</td><td data-i18n="t3_e1">Dropped below optimum.</td></tr>
+                            <tr><td data-i18n="t3_m2">Debt-to-Equity Ratio</td><td>1.54</td><td class="highlight-td">1.42</td><td data-i18n="t3_e2">Improved due to retained earnings.</td></tr>
+                            <tr><td data-i18n="t3_m4">Working Capital (AMD)</td><td>8,739M</td><td class="warning-td">57M</td><td data-i18n="t3_e4">Critical exhaustion.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: FINANCIAL LEVERAGE (DFL) -->
+        <div id="tab4" class="tab-panel">
+            <div class="alert-box danger">
+                <div class="alert-title">⚠ <span data-i18n="t4_w_t">Insolvency Risk Warning</span></div>
+                <div class="alert-text" data-i18n="t4_w_d">Increasing the debt ratio multiplies ROE, but only if Return on Assets (ROA) exceeds the Cost of Debt. If ROA drops below the interest rate, heavy debt rapidly accelerates insolvency.</div>
+            </div>
+            <div class="dash-grid">
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group"><h3 data-i18n="t4_sim_t">Leverage Parameters</h3><p data-i18n="t4_sim_d">Impact of Debt Ratio on Return on Equity.</p></div>
+                    </div>
+                    <div class="slider-group">
+                        <div class="slider-header"><span data-i18n="roa_l">Current ROA</span><span class="slider-val" id="valRoa">17.0%</span></div>
+                        <input type="range" class="custom-slider" id="dflRoa" min="1" max="30" step="0.5" value="17">
+                    </div>
+                    <div class="fg">
+                        <label data-i18n="dfl_r">Simulated Debt/Equity Ratio</label>
+                        <div class="custom-select">
+                            <select id="dflRatio">
+                                <option value="0.5">0.5x (Conservative)</option>
+                                <option value="1.0">1.0x (Balanced)</option>
+                                <option value="1.42" selected>1.42x (Current Viva Level)</option>
+                                <option value="2.5">2.5x (Aggressive)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="padding: 24px; background: var(--bg-alt); border-radius: var(--radius-sm); border: 1px solid var(--card-border); text-align:center;">
+                        <p style="font-size: 13px; color: var(--text-sec); font-weight:700; margin-bottom: 8px;" data-i18n="dfl_roe">Projected ROE</p>
+                        <h2 id="roeDisplay" style="font-size: 36px; font-weight:900; color:var(--green);">36.0%</h2>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-hdr">
+                        <div class="card-title-group"><h3 data-i18n="t4_g_t">ROE vs Leverage Curve</h3><p data-i18n="t4_g_d">Visualizing the tipping point.</p></div>
+                    </div>
+                    <div style="height: 300px; width: 100%;"><canvas id="dflChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: DATA CENTER (CORE) -->
+        <div id="tab5" class="tab-panel">
+            <!-- OPEX Doughnut & Overview -->
+            <div class="card span-2" style="display:flex; flex-direction:row; align-items:center; gap: 40px; padding: 40px;">
+                <div style="flex:1;">
+                    <h2 style="font-size: 28px; font-weight:900; color:var(--text); margin-bottom: 16px;" data-i18n="t5_t1">B2B Tier III Data Center</h2>
+                    <p style="color:var(--text-sec); margin-bottom: 32px;" data-i18n="t5_d1">A massive CAPEX investment (9,124M) requiring stringent OPEX control. Electricity heavily dominates operations.</p>
+                    
+                    <h4 style="font-size:16px; margin-bottom: 16px;" data-i18n="t5_opex_t">Annual OPEX Breakdown (2,500M AMD)</h4>
+                    <ul style="list-style:none; display:flex; flex-direction:column; gap:12px;">
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#3B82F6;">■ Electricity</span> <span data-i18n="op_1">950M (38%)</span></li>
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#10B981;">■ Staff</span> <span data-i18n="op_2">720M (29%)</span></li>
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#F59E0B;">■ Maintenance</span> <span data-i18n="op_3">280M (11%)</span></li>
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#8B5CF6;">■ Software</span> <span data-i18n="op_4">200M (8%)</span></li>
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#E3000F;">■ Admin</span> <span data-i18n="op_5">190M (8%)</span></li>
+                        <li style="display:flex; justify-content:space-between; font-weight:700;"><span style="color:#06B6D4;">■ Internet</span> <span data-i18n="op_6">160M (6%)</span></li>
+                    </ul>
+                </div>
+                <div style="flex:1; height: 350px; position:relative;">
+                    <canvas id="opexDoughnut"></canvas>
+                </div>
+            </div>
+
+            <!-- Hardware Architecture Grid -->
+            <div class="card span-2">
+                <div class="card-hdr">
+                    <div class="card-title-group"><h3 data-i18n="t5_hw_t">Data Center Architecture Grid</h3><p data-i18n="t5_hw_d">Total Hardware CAPEX Breakdown</p></div>
+                </div>
+                <div class="hw-grid">
+                    <div class="hw-card"><div class="hw-icon">🖥️</div><div class="hw-title" data-i18n="hw_1">Blade Servers</div><div class="hw-qty" data-i18n="hw_q1">120 Units</div><div class="hw-cost">960M</div></div>
+                    <div class="hw-card"><div class="hw-icon">💾</div><div class="hw-title" data-i18n="hw_2">SAN Storage</div><div class="hw-qty" data-i18n="hw_q2">4 Systems</div><div class="hw-cost">720M</div></div>
+                    <div class="hw-card"><div class="hw-icon">🔌</div><div class="hw-title" data-i18n="hw_3">Core Switches</div><div class="hw-qty" data-i18n="hw_q3">10 Units</div><div class="hw-cost">450M</div></div>
+                    <div class="hw-card"><div class="hw-icon">🛡️</div><div class="hw-title" data-i18n="hw_4">Cyber Firewall</div><div class="hw-qty" data-i18n="hw_q4">3 Systems</div><div class="hw-cost">360M</div></div>
+                    <div class="hw-card"><div class="hw-icon">🗄️</div><div class="hw-title" data-i18n="hw_5">Backup System</div><div class="hw-qty" data-i18n="hw_q5">2 Systems</div><div class="hw-cost">300M</div></div>
+                    <div class="hw-card"><div class="hw-icon">❄️</div><div class="hw-title" data-i18n="hw_6">Precision Cooling</div><div class="hw-qty" data-i18n="hw_q6">6 Units</div><div class="hw-cost">900M</div></div>
+                    <div class="hw-card"><div class="hw-icon">🔋</div><div class="hw-title" data-i18n="hw_7">UPS System</div><div class="hw-qty" data-i18n="hw_q7">4 Units</div><div class="hw-cost">440M</div></div>
+                    <div class="hw-card"><div class="hw-icon">⚡</div><div class="hw-title" data-i18n="hw_8">Diesel Generator</div><div class="hw-qty" data-i18n="hw_q8">2 Units</div><div class="hw-cost">500M</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: CREDIT VS LEASING -->
+        <div id="tab6" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr">
+                    <div class="card-title-group"><h3 data-i18n="t6_t">The Showdown: Bank Credit vs Financial Leasing</h3><p data-i18n="t6_d">9,124M AMD vs 4,230M AMD CAPEX strategies.</p></div>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead><tr><th data-i18n="th_metric">Metric</th><th data-i18n="th_credit">Bank Credit (9%)</th><th data-i18n="th_leasing">Financial Leasing</th><th data-i18n="th_win">Winning Strategy</th></tr></thead>
+                        <tbody>
+                            <tr><td data-i18n="t6_m1">Initial CAPEX Outlay</td><td>9,124M AMD</td><td class="highlight-td">4,230M AMD</td><td><span class="badge" style="background:var(--green);" data-i18n="b_l">Leasing</span></td></tr>
+                            <tr><td data-i18n="t6_m2">Net Present Value (NPV @10%)</td><td>834M AMD</td><td class="highlight-td">6,506M AMD</td><td><span class="badge" style="background:var(--green);" data-i18n="b_l">Leasing</span></td></tr>
+                            <tr><td data-i18n="t6_m3">Internal Rate of Return (IRR)</td><td>12.38%</td><td class="highlight-td">42.70%</td><td><span class="badge" style="background:var(--green);" data-i18n="b_l">Leasing</span></td></tr>
+                            <tr><td data-i18n="t6_m4">Payback Period</td><td>4.69 Years</td><td class="highlight-td">2.47 Years</td><td><span class="badge" style="background:var(--green);" data-i18n="b_l">Leasing</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 7: DYNAMIC PROGRAMMING -->
+        <div id="tab7" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr">
+                    <div class="card-title-group"><h3 data-i18n="t7_t">Equipment Replacement: Dynamic Programming</h3><p data-i18n="t7_d">Balancing physical deterioration vs moral depreciation (5-year horizon).</p></div>
+                </div>
+                <div class="dp-container">
+                    <div class="dp-controls">
+                        <button class="dp-btn primary" id="btnGroup" onclick="setDP('group')" data-i18n="dp_1">Proactive Group Replacement</button>
+                        <button class="dp-btn secondary" id="btnInd" onclick="setDP('ind')" data-i18n="dp_2">Reactive Individual Replacement</button>
+                    </div>
+                    <div class="alert-box success" id="dpTextBox" style="margin-bottom:0;">
+                        <div class="alert-text" id="dpText" data-i18n="dp_txt1"><b>Group Replacement Policy:</b> The mathematical DP model dictates that replacing massive arrays of telecom components proactively at Year 3 minimizes the total discounted costs.</div>
+                    </div>
+                    <div class="dp-flow" id="dpFlowChart">
+                        <!-- JS injected -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 8: ENVIRONMENTAL (5G) -->
+        <div id="tab8" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr">
+                    <div class="card-title-group"><h3 data-i18n="t8_t">The 5G Energy Paradox & Green Telecom</h3><p data-i18n="t8_d">Addressing OPEX spikes from 5G Small Cells.</p></div>
+                </div>
+                <div class="dash-grid-3" style="grid-template-columns: repeat(3, 1fr);">
+                    <div style="padding: 24px; text-align: center; border-radius: var(--radius-sm); border: 1px solid var(--red); background: var(--red-glow);">
+                        <div style="font-size: 36px; margin-bottom: 12px;">⚡</div>
+                        <div style="font-size: 24px; font-weight: 900; color: var(--red);" data-i18n="e_v1">Huge</div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text);" data-i18n="e_1">5G Energy Spike</div>
+                    </div>
+                    <div style="padding: 24px; text-align: center; border-radius: var(--radius-sm); border: 1px solid var(--amber); background: var(--amber-bg);">
+                        <div style="font-size: 36px; margin-bottom: 12px;">☀️</div>
+                        <div style="font-size: 24px; font-weight: 900; color: var(--amber);">30%</div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text);" data-i18n="e_2">OPEX Saved via Solar</div>
+                    </div>
+                    <div style="padding: 24px; text-align: center; border-radius: var(--radius-sm); border: 1px solid var(--green); background: var(--green-bg);">
+                        <div style="font-size: 36px; margin-bottom: 12px;">🌱</div>
+                        <div style="font-size: 24px; font-weight: 900; color: var(--green);">-25t</div>
+                        <div style="font-size: 13px; font-weight: 700; color: var(--text);" data-i18n="e_3">CO2 Cut / Year</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 9: SAFETY ECONOMICS -->
+        <div id="tab9" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr"><div class="card-title-group"><h3 data-i18n="t9_t">Safety Economics: The E_os Equation</h3></div></div>
+                <div style="text-align: center; padding: 40px; background: #111827; color: #fff; border-radius: var(--radius-sm); margin-bottom: 24px;">
+                    <div style="font-size: 40px; font-weight: 900; font-family: var(--font-mono); letter-spacing: 2px;">
+                        <span style="color:#A78BFA;">E<sub>os</sub></span> = 
+                        <span style="color:#34D399;">V<sub>prev</sub></span> + 
+                        <span style="color:#60A5FA;">P<sub>inc</sub></span> - 
+                        <span style="color:#F87171;">C<sub>inv</sub></span>
+                    </div>
+                </div>
+                <div class="dash-grid-3">
+                    <div style="padding: 24px; border: 1px solid var(--card-border); background: var(--bg-alt); border-radius: var(--radius-sm);">
+                        <h4 style="color:var(--green); font-size: 16px; margin-bottom:12px; font-weight: 800;">V_prev (Prevented)</h4>
+                        <p style="font-size:13px; color:var(--text-sec);" data-i18n="s_1">Avoids 40M AMD in regulatory fines and hardware loss via Fire Suppression.</p>
+                    </div>
+                    <div style="padding: 24px; border: 1px solid var(--card-border); background: var(--bg-alt); border-radius: var(--radius-sm);">
+                        <h4 style="color:var(--blue); font-size: 16px; margin-bottom:12px; font-weight: 800;">P_inc (Productivity)</h4>
+                        <p style="font-size:13px; color:var(--text-sec);" data-i18n="s_2">Ergonomic upgrades and PPE lower engineer fatigue and churn rate.</p>
+                    </div>
+                    <div style="padding: 24px; border: 1px solid var(--card-border); background: var(--bg-alt); border-radius: var(--radius-sm);">
+                        <h4 style="color:var(--red); font-size: 16px; margin-bottom:12px; font-weight: 800;">C_inv (Investment)</h4>
+                        <p style="font-size:13px; color:var(--text-sec);" data-i18n="s_3">The CAPEX required for UPS, suppression units, and ISO audits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 10: RISK MANAGEMENT -->
+        <div id="tab10" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr"><div class="card-title-group"><h3 data-i18n="t10_t">Risk Matrix</h3></div></div>
+                <ul style="list-style:none; display:flex; flex-direction:column; gap:16px;">
+                    <li style="padding: 16px; background: var(--red-glow); border-left: 4px solid var(--red); font-weight:600;"><strong data-i18n="r1_t">Currency Fluctuation:</strong> <span data-i18n="r1_d">Hedging via Forward contracts for Cisco/Dell imports.</span></li>
+                    <li style="padding: 16px; background: var(--red-glow); border-left: 4px solid var(--red); font-weight:600;"><strong data-i18n="r2_t">Cyber Risk:</strong> <span data-i18n="r2_d">Zero-Trust Architecture & ISO 27001 compliance.</span></li>
+                    <li style="padding: 16px; background: var(--amber-bg); border-left: 4px solid var(--amber); font-weight:600;"><strong data-i18n="r3_t">Depreciation Risk:</strong> <span data-i18n="r3_d">Dynamic Programming model for optimal replacement.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TAB 11: PYTHON ALGORITHMS -->
+        <div id="tab11" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr"><div class="card-title-group"><h3 data-i18n="t11_t">Financial Data Science Automation</h3></div></div>
+                <div class="code-block">
+                    <div class="code-header"><div class="code-dot r"></div><div class="code-dot y"></div><div class="code-dot g"></div><div class="code-title">thesis_npv_calculator.py</div></div>
+                    <div class="code-content"><pre><span class="kw">import</span> numpy_financial <span class="kw">as</span> npf
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+
+<span class="cm"># Define Cash Flows (in Millions AMD)</span>
+cf_leasing = [-<span class="nm">4230</span>, <span class="nm">1245.2</span>, <span class="nm">1818.9</span>, <span class="nm">2448.0</span>, <span class="nm">2638.7</span>, <span class="nm">2798.7</span>, <span class="nm">2759.2</span>, <span class="nm">2269.8</span>]
+cf_credit  = [-<span class="nm">9124</span>, <span class="nm">1000.8</span>, <span class="nm">1641.8</span>, <span class="nm">2260.1</span>, <span class="nm">2439.0</span>, <span class="nm">2586.2</span>, <span class="nm">2532.8</span>, <span class="nm">2517.6</span>]
+
+<span class="fn">def</span> evaluate_financing_model(discount_rate=<span class="nm">0.10</span>):
+    npv_leasing = npf.npv(discount_rate, cf_leasing)
+    irr_leasing = npf.irr(cf_leasing) * <span class="nm">100</span>
+    <span class="kw">return</span> npv_leasing, irr_leasing</pre></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 12: FINAL CONCLUSION -->
+        <div id="tab12" class="tab-panel">
+            <div class="card span-2">
+                <div class="card-hdr"><div class="card-title-group"><h3 data-i18n="t12_t">Executive Thesis Conclusion</h3></div></div>
+                <div class="alert-box success">
+                    <div class="alert-title">1. <span data-i18n="fc_t1">Adopt Financial Leasing</span></div>
+                    <div class="alert-text" data-i18n="fc_d1">The mathematical models conclusively prove that leasing telecom hardware for the Data Center project yields an NPV of 6,506M AMD and an IRR of 42.70%, radically outperforming traditional bank loans.</div>
+                </div>
+                <div class="alert-box success">
+                    <div class="alert-title">2. <span data-i18n="fc_t2">Stop Dividend Bleed</span></div>
+                    <div class="alert-text" data-i18n="fc_d2">To reverse the critical Working Capital exhaustion, Viva Armenia must temporarily freeze dividend payouts and reinvest net profits directly into the Data Center expansion to restore liquidity.</div>
+                </div>
+                <div class="alert-box success">
+                    <div class="alert-title">3. <span data-i18n="fc_t3">ESG & Automation</span></div>
+                    <div class="alert-text" data-i18n="fc_d3">Implement Dynamic Programming for hardware replacement. Roll out hybrid solar 5G stations to offset heavy OPEX and ensure ESG compliance.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 13: AI ADVISOR -->
+        <div id="tab13" class="tab-panel">
+            <div class="card span-2" style="padding:0; border:none; background:transparent; box-shadow:none;">
+                <div class="chat-container">
+                    <div class="chat-history" id="chatArea">
+                        <div class="chat-msg msg-bot" id="aiWelcome">
+                            Hello! I am the Trilingual AI Advisor connected live to your Investment Simulator. I see the current NPV is 6,506M AMD. Ask me anything about the thesis strategy.
+                        </div>
+                    </div>
+                    <div class="chat-chips">
+                        <button class="chat-chip" onclick="sendAiPrompt('liquidity')" data-i18n="ai_c1">Liquidity Crisis</button>
+                        <button class="chat-chip" onclick="sendAiPrompt('leasing')" data-i18n="ai_c2">Leasing vs Credit</button>
+                        <button class="chat-chip" onclick="sendAiPrompt('dp')" data-i18n="ai_c3">Dynamic Programming</button>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask the Viva Armenia Thesis AI...">
+                        <button onclick="handleUserChat()" data-i18n="ai_btn">Ask AI</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
 <script>
-(function(){
-'use strict';
 /* ================================================
- * SECTION 1: TRILINGUAL TRANSLATION ENGINE (i18n)
- * All UI text is stored in T object, keyed by language.
- * data-i18n attributes bind elements to translation keys.
- * ================================================ */
-var currentLang='en';
-var T={
-en:{
-brandSub:'Strategic Dashboard',navLabel:'Analytics',nav1:'Executive Dashboard',nav2:'Financial Analytics',nav3:'Tech & Algorithms',
-footer:"Master's Thesis — Economics<br>Raffi Poghosyan • NPUA 2026",
-topTitle:'Data Center Investment Analysis',
-kpiRoiLabel:'Project ROI',kpiRoiSub:'High return via leasing',
-kpiNpvLabel:'NPV (Net Present Value)',
-kpiPayLabel:'Payback Period',kpiPaySub:'Below 3-year target',
-kpiRoeLabel:'Company ROE',kpiRoeSub:'+12pp improvement',
-simTitle:'Investment Simulator',simTag:'Interactive',simFund:'Funding Strategy',
-simLeasing:'Financial Leasing (CAPEX: 4,230M AMD)',simCredit:'Bank Credit (CAPEX: 9,124M AMD)',
-simRate:'Discount Rate (r)',simAmount:'Investor Contribution',simUnit:'(Millions AMD)',
-resShare:'Ownership Share',resProfit:'Expected Profit (Year 5)',
-btnSave:'Save Configuration',saveAlert:'Configuration saved successfully!',
-esgTitle:'ESG & Safety Radar',esgTag:'Impact',
-esgCo2:'CO₂ Reduction<br>per Year',esgSolar:'Energy Saved<br>via Solar Panels',esgFines:'AMD Fines<br>Prevented Annually',
-esgInfo:'<strong>Safety Economics:</strong> The Eos model (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) proves that fire suppression, UPS systems, and PPE investments yield a net positive return by eliminating regulatory penalties and operational downtime.',
-chartTitle:'Cumulative Cash Flows — 5-Year Projection',
-chartTagL:'Showing: Financial Leasing',chartTagC:'Showing: Bank Credit',
-chartLeasingLabel:'Financial Leasing',chartCreditLabel:'Bank Credit',
-chatTitle:'AI Strategic Assistant',chatTag:'Thesis Q&A',
-chatWelcome:'Hello! I am the Viva Armenia project advisor. Ask me about leasing vs. credit, ESG impact, safety economics, or the Python methodology.',
-chatPlaceholder:'Ask about leasing, credit, ESG, safety, NPV...',chatSend:'Send',
-chips:['Why Leasing?','ESG Impact','NPV Analysis','Safety ROI','Python Logic'],
-compTitle:'Financing Strategy Comparison',compTag:'Credit vs Leasing',
-thMetric:'Metric',thCredit:'Bank Credit',thLeasing:'Financial Leasing',thAdv:'Advantage',
-mCapex:'Initial CAPEX',mNpv:'Net Present Value (NPV)',mIrr:'Internal Rate of Return (IRR)',mRoi:'Return on Investment (ROI)',mPayback:'Payback Period',mProfit:'Year-5 Net Profit',
-sensTitle:'IRR Sensitivity Map',sensTag:'NPV vs Discount Rate',sensRate:'Discount Rate',sensLeasing:'NPV Leasing',sensCredit:'NPV Credit',
-vatTitle:'VAT / Net Amount Converter',vatTag:'B2B Revenue',vatLabel:'Display Mode',
-vatNet:'Net Value (Excluding VAT)',vatGross:'Gross Value (+20% VAT)',
-svcIaas:'IaaS Cloud Services',svcVps:'Virtual Servers (VPS)',svcStorage:'Storage & Backup',svcColo:'Colocation Services',
-vatUnit:'M AMD / Year',vatUnit2:'M AMD / Year',vatUnit3:'M AMD / Year',vatUnit4:'M AMD / Year',vatTotal:'Total Annual Revenue',
-codeTitle:'Financial Modeling — Python Source Code',
-flowTitle:'Algorithm Automation Flow',flowTag:'Pipeline',
-flow1t:'Raw Data',flow1d:'Excel / CSV inputs',flow2t:'Python / Pandas',flow2d:'Data cleaning & structuring',
-flow3t:'numpy_financial',flow3d:'NPV, IRR computation',flow4t:'Dashboard',flow4d:'Chart.js visualization',
-methTitle:'Methodology & Automation',methTag:'Approach',
-methDesc:'All financial projections were computed using Python 3.11 with automated scripts, ensuring reproducibility and eliminating human calculation errors across 42 scenario combinations.',
-tech1:'Industry-standard NPV and IRR computations with sensitivity sweeps across 21 discount rates.',
-tech2:'Structured comparison tables, automated VAT conversions, and multi-year cash flow aggregation.',
-tech3h:'Dynamic Programming',tech3:'Optimized scenario analysis evaluating 42 parameter combinations across both financing models.',
-yrs:'Yrs',base:'Base'
-},
-am:{
-brandSub:'Ռազմավարական վահանակ',navLabel:'Վերլուծություն',
-nav1:'Գլխավոր վահանակ',nav2:'Ֆինանսական վերլուծություն',nav3:'Տեխնոլոգիա և ալգորիթմներ',
-footer:'Մագիստրոսական թեզ — Տնտեսագիտություն<br>Ռաֆֆի Պողոսյան • ՀԱՊՀ 2026',
-topTitle:'Data Center նախագծի գնահատում',
-kpiRoiLabel:'Նախագծի ROI',kpiRoiSub:'Բարձր եկամտաբերություն լիզինգով',
-kpiNpvLabel:'ԶՆԱ (Զուտ ներկա արժեք)',
-kpiPayLabel:'Վերադարձի ժամկետ',kpiPaySub:'3 տարիներից պակաս',
-kpiRoeLabel:'Ընկերության ROE',kpiRoeSub:'+12տկ բարելավում',
-simTitle:'Ներդրումային սիմուլյատոր',simTag:'Ինտերակտիվ',simFund:'Ֆինանսավորման ռազմավարություն',
-simLeasing:'Ֆինանսական լիզինգ (CAPEX: 4,230Մ դրամ)',simCredit:'Բանկային վարկ (CAPEX: 9,124Մ դրամ)',
-simRate:'Զեղծի տոկոսադրույք (r)',simAmount:'Ներդրողի ներդրում',simUnit:'(մլն դրամ)',
-resShare:'Կապիտալի բաժնեմաս',resProfit:'Սպասվող շահույթ (5-րդ տարի)',
-btnSave:'Պահպանել',saveAlert:'Կոնֆիգուրացիան հաջողությամբ պահպանվեց!',
-esgTitle:'ESG և անվտանգություն',esgTag:'Ազդեցություն',
-esgCo2:'CO₂ կրճատում<br>տարեկան',esgSolar:'Էներգիա խնայողություն<br>արևային վահանակներով',esgFines:'Տուգանքների<br>կանխարգելում',
-esgInfo:'<strong>Անվտանգության տնտեսագիտություն.</strong> Eos մոդելը (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) ապացուցում է, որ հրդեհաշիիման, UPS և պաշտպանության ներդրումները դրական վերադարձ են տալիս։',
-chartTitle:'Կուտակային դրամական հոսքեր — 5 տարի',
-chartTagL:'Ցուցադրվում է: Ֆինանսական լիզինգ',chartTagC:'Ցուցադրվում է: Բանկային վարկ',
-chatTitle:'AI Ռազմավարական խորհրդատու',chatTag:'Հարց և պատասխան',
-chatWelcome:'Բարև Ձեզ։ Ես Viva Armenia նախագծի խորհրդատունն եմ։ Հարցրեք լիզինգի, վարկի, ESG-ի կամ Python մեթոդոլոգիայի մասին։',
-chatPlaceholder:'Հարցրեք լիզինգի, վարկի, ESG, NPV...',chatSend:'Ուղարկել',
-chips:['Ինչու։ լիզինգ?','ESG ազդեցություն','NPV վերլուծություն','Անվտանգություն','Python տրամաբանություն'],
-compTitle:'Ֆինանսավորման համեմատում',compTag:'Վարկ ընդ լիզինգ',
-thMetric:'Ցուցանիշ',thCredit:'Բանկային վարկ',thLeasing:'Ֆին. լիզինգ',thAdv:'Առավելություն',
-mCapex:'Սկզբնական CAPEX',mNpv:'Զուտ ներկա արժեք (NPV)',mIrr:'Ներքին եկամտ. նորմա (IRR)',mRoi:'ROI',mPayback:'Վերադարձի ժամկետ',mProfit:'5-րդ տարվա շահույթ',
-sensTitle:'IRR զգայունության քարտեզ',sensTag:'NPV ըստ զեղցի տոկոսի',sensRate:'Զեղցի տոկոս',sensLeasing:'NPV լիզինգ',sensCredit:'NPV վարկ',
-vatTitle:'ԱԱՀ / Զուտ արժեքի փոխարկիչ',vatTag:'B2B եկամուտ',vatLabel:'Ցուցադրման ռեժիմ',
-vatNet:'Զուտ արժեք (առանց ԱԱՀ)',vatGross:'Համախառն (+20% ԱԱՀ)',
-svcIaas:'IaaS ամպային ծառայություններ',svcVps:'Վիրտուալ սերվերներ (VPS)',svcStorage:'Storage և Backup',svcColo:'Colocation',
-vatUnit:'մլն դրամ / տարի',vatUnit2:'մլն դրամ / տարի',vatUnit3:'մլն դրամ / տարի',vatUnit4:'մլն դրամ / տարի',vatTotal:'Տարեկան ընդհանուր հասույթ',
-codeTitle:'Ֆինանսական մոդելավորում — Python',
-flowTitle:'Ալգորիթմի ավտոմատացման հոսք',flowTag:'Փայպլայն',
-flow1t:'Նախնական տվյալներ',flow1d:'Excel / CSV',flow2t:'Python / Pandas',flow2d:'Տվյալների մաքրում',
-flow3t:'numpy_financial',flow3d:'NPV, IRR հաշվարկ',flow4t:'Վահանակ',flow4d:'Chart.js վիզուալիզացիա',
-methTitle:'Մեթոդոլոգիա և ավտոմատացում',methTag:'Մոտեցում',
-methDesc:'Բոլոր կանխատեսումները Python 3.11-ով՝ ապահովելով վերարտադրելիություն 42 սցենարների համար։',
-tech1:'NPV և IRR հաշվարկներ 21 զեղցի տոկոսադրույքների համար։',
-tech2:'Կառուցվածքային աղյուսակներ, ԱԱՀ փոխարկումներ։',
-tech3h:'Դինամիկ ծրագրավորում',tech3:'42 պարամետրերի օպտիմալացում։',
-yrs:'տարի',base:'Բազային',
-chartLeasingLabel:'Ֆին. լիզինգ',chartCreditLabel:'Բանկ. վարկ'
-},
-ru:{
-brandSub:'Стратегическая панель',navLabel:'Аналитика',
-nav1:'Обзорная панель',nav2:'Финансовая аналитика',nav3:'Технологии и алгоритмы',
-footer:'Магистерская диссертация — Экономика<br>Раффи Погосян • НПУА 2026',
-topTitle:'Анализ инвестиций в Data Center',
-kpiRoiLabel:'ROI проекта',kpiRoiSub:'Высокая доходность лизинга',
-kpiNpvLabel:'ЧДС (Чистая приведённая стоимость)',
-kpiPayLabel:'Срок окупаемости',kpiPaySub:'Менее 3 лет',
-kpiRoeLabel:'ROE компании',kpiRoeSub:'+12пп улучшение',
-simTitle:'Инвест. симулятор',simTag:'Интерактив',simFund:'Стратегия финансирования',
-simLeasing:'Фин. лизинг (CAPEX: 4 230М драм)',simCredit:'Банк. кредит (CAPEX: 9 124М драм)',
-simRate:'Ставка дисконт. (r)',simAmount:'Вклад инвестора',simUnit:'(млн драм)',
-resShare:'Доля владения',resProfit:'Прибыль (5-й год)',
-btnSave:'Сохранить',saveAlert:'Конфигурация сохранена!',
-esgTitle:'ESG и безопасность',esgTag:'Воздействие',
-esgCo2:'Сокращение CO₂<br>в год',esgSolar:'Экономия энергии<br>солн. панели',esgFines:'Штрафы<br>предотвращены',
-esgInfo:'<strong>Экономика безопасности:</strong> Модель Eos (E<sub>os</sub> = V<sub>prev</sub> + P<sub>inc</sub> - C<sub>inv</sub>) доказывает, что инвестиции в пожаротушение, ИБП и СИЗ дают положительный возврат.',
-chartTitle:'Кумулятивные потоки — 5 лет',
-chartTagL:'Показан: Фин. лизинг',chartTagC:'Показан: Банк. кредит',
-chatTitle:'AI ассистент',chatTag:'Вопросы',
-chatWelcome:'Здравствуйте! Я консультант Viva Armenia. Спрашивайте о лизинге, кредите, ESG или Python.',
-chatPlaceholder:'Спросите о лизинге, кредите, ESG, NPV...',chatSend:'Отправить',
-chips:['Почему лизинг?','Влияние ESG','Анализ NPV','РОИ безопасности','Логика Python'],
-compTitle:'Сравнение стратегий',compTag:'Кредит vs лизинг',
-thMetric:'Показатель',thCredit:'Банк. кредит',thLeasing:'Фин. лизинг',thAdv:'Преимущество',
-mCapex:'Нач. CAPEX',mNpv:'ЧДС (NPV)',mIrr:'IRR',mRoi:'ROI',mPayback:'Окупаемость',mProfit:'Прибыль 5-го года',
-sensTitle:'Карта чувствительности',sensTag:'NPV vs ставка',sensRate:'Ставка',sensLeasing:'NPV лизинг',sensCredit:'NPV кредит',
-vatTitle:'Конвертер НДС',vatTag:'B2B выручка',vatLabel:'Режим',
-vatNet:'Без НДС',vatGross:'С НДС (+20%)',
-svcIaas:'IaaS облачные',svcVps:'VPS сервера',svcStorage:'Хранилище',svcColo:'Colocation',
-vatUnit:'млн драм/год',vatUnit2:'млн драм/год',vatUnit3:'млн драм/год',vatUnit4:'млн драм/год',vatTotal:'Итого выручка',
-codeTitle:'Фин. моделирование — Python',
-flowTitle:'Поток автоматизации',flowTag:'Пайплайн',
-flow1t:'Исходные данные',flow1d:'Excel / CSV',flow2t:'Python / Pandas',flow2d:'Очистка данных',
-flow3t:'numpy_financial',flow3d:'Расчёт NPV, IRR',flow4t:'Панель',flow4d:'Визуализация',
-methTitle:'Методология',methTag:'Подход',
-methDesc:'Все прогнозы на Python 3.11, обеспечивая воспроизводимость в 42 сценариях.',
-tech1:'Расчёты NPV/IRR по 21 ставке.',tech2:'Таблицы, конвертация НДС, агрегация.',
-tech3h:'Динам. прогр.',tech3:'42 комбинации параметров.',
-yrs:'лет',base:'База',chartLeasingLabel:'Фин. лизинг',chartCreditLabel:'Банк. кредит'
+   1. GLOBAL LOGIC & THEME (Dark Mode & UI)
+   ================================================ */
+let isDark = false;
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+    isDark = !isDark;
+    document.body.classList.toggle('dark-mode', isDark);
+    themeToggle.innerText = isDark ? '☀️' : '🌙';
+    updateChartTheme();
+});
+
+const navBtns = document.querySelectorAll('.nav-btn');
+const tabPanels = document.querySelectorAll('.tab-panel');
+navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        tabPanels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+    });
+});
+
+/* ================================================
+   2. CUSTOM DROPDOWNS JS
+   ================================================ */
+function initCustomSelects() {
+    let x = document.getElementsByClassName("custom-select");
+    for (let i = 0; i < x.length; i++) {
+        let selElmnt = x[i].getElementsByTagName("select")[0];
+        let a = document.createElement("DIV");
+        a.setAttribute("class", "select-selected");
+        a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+        x[i].appendChild(a);
+        
+        let b = document.createElement("DIV");
+        b.setAttribute("class", "select-items select-hide");
+        for (let j = 0; j < selElmnt.length; j++) {
+            let c = document.createElement("DIV");
+            c.innerHTML = selElmnt.options[j].innerHTML;
+            c.addEventListener("click", function(e) {
+                let s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                let h = this.parentNode.previousSibling;
+                for (let k = 0; k < s.length; k++) {
+                    if (s.options[k].innerHTML == this.innerHTML) {
+                        s.selectedIndex = k;
+                        h.innerHTML = this.innerHTML;
+                        let y = this.parentNode.getElementsByClassName("same-as-selected");
+                        for (let l = 0; l < y.length; l++) { y[l].removeAttribute("class"); }
+                        this.setAttribute("class", "same-as-selected");
+                        
+                        s.dispatchEvent(new Event('change')); // Trigger simulator updates
+                        break;
+                    }
+                }
+                h.click();
+            });
+            b.appendChild(c);
+        }
+        x[i].appendChild(b);
+        a.addEventListener("click", function(e) {
+            e.stopPropagation();
+            closeAllSelect(this);
+            this.nextSibling.classList.toggle("select-hide");
+            this.classList.toggle("select-arrow-active");
+        });
+    }
 }
+function closeAllSelect(elmnt) {
+    let x = document.getElementsByClassName("select-items");
+    let y = document.getElementsByClassName("select-selected");
+    for (let i = 0; i < y.length; i++) {
+        if (elmnt != y[i]) y[i].classList.remove("select-arrow-active");
+    }
+    for (let i = 0; i < x.length; i++) {
+        if (elmnt != y[i]) x[i].classList.add("select-hide");
+    }
+}
+document.addEventListener("click", closeAllSelect);
+initCustomSelects();
+
+/* ================================================
+   3. FINANCIAL SIMULATORS (WACC, DFL, NPV)
+   ================================================ */
+const taxRate = 0.18;
+// Selectors
+const waccWd = document.getElementById('waccWd');
+const waccWe = document.getElementById('waccWe');
+const waccKd = document.getElementById('waccKd');
+const waccKe = document.getElementById('waccKe');
+const dflRoa = document.getElementById('dflRoa');
+const dflRatio = document.getElementById('dflRatio');
+const simStrategy = document.getElementById('simStrategy');
+const simRate = document.getElementById('simRate');
+
+function updateSimulators() {
+    // 1. WACC
+    let Wd = parseFloat(waccWd.value) / 100;
+    let We = 1 - Wd;
+    waccWe.value = (We * 100).toFixed(0);
+    document.getElementById('valWd').innerText = (Wd * 100).toFixed(0) + '%';
+    document.getElementById('valWe').innerText = (We * 100).toFixed(0) + '%';
+    
+    let Kd = parseFloat(waccKd.value) / 100;
+    let Ke = parseFloat(waccKe.value) / 100;
+    document.getElementById('valKd').innerText = (Kd * 100).toFixed(1) + '%';
+    document.getElementById('valKe').innerText = (Ke * 100).toFixed(1) + '%';
+    
+    let wacc = (We * Ke) + (Wd * Kd * (1 - taxRate));
+    let waccPercent = (wacc * 100).toFixed(1);
+    document.getElementById('waccDisplay').innerText = waccPercent + '%';
+    if(chartWacc) { chartWacc.data.datasets[0].data = [waccPercent, Math.max(0, 100 - waccPercent)]; chartWacc.update(); }
+
+    // 2. DFL (Leverage)
+    let roa = parseFloat(dflRoa.value) / 100;
+    document.getElementById('valRoa').innerText = (roa * 100).toFixed(1) + '%';
+    let debtEq = parseFloat(dflRatio.value);
+    let roe = roa + (roa - Kd) * debtEq * (1 - taxRate); // DuPont approximation
+    
+    let roeEl = document.getElementById('roeDisplay');
+    roeEl.innerText = (roe * 100).toFixed(1) + '%';
+    roeEl.style.color = roe < 0 ? 'var(--red)' : 'var(--green)';
+
+    if(chartDfl) {
+        let ratios = [0.5, 1.0, 1.42, 2.0, 2.5];
+        let roeData = ratios.map(r => (roa + (roa - Kd) * r * (1 - taxRate)) * 100);
+        chartDfl.data.datasets[0].data = roeData;
+        let c = roa < Kd ? '#E3000F' : '#3B82F6';
+        chartDfl.data.datasets[0].borderColor = c;
+        chartDfl.data.datasets[0].pointBackgroundColor = c;
+        chartDfl.update();
+    }
+
+    // 3. NPV
+    let isLeasing = simStrategy.value === 'leasing';
+    let r = parseFloat(simRate.value);
+    let baseNPV = isLeasing ? 6506 : 834;
+    let factor = 10 / r;
+    let finalNPV = Math.round(baseNPV * factor);
+    
+    document.getElementById('resNpv').innerText = finalNPV.toLocaleString('en-US') + 'M AMD';
+    document.getElementById('resIrr').innerText = isLeasing ? '42.70%' : '12.38%';
+    document.getElementById('kpiNpvVal').innerText = finalNPV.toLocaleString('en-US') + 'M';
+}
+
+[waccWd, waccKd, waccKe, dflRoa].forEach(el => el.addEventListener('input', updateSimulators));
+[dflRatio, simStrategy, simRate].forEach(el => el.addEventListener('change', updateSimulators));
+
+/* ================================================
+   4. CHART.JS INTEGRATION
+   ================================================ */
+let chartCF, chartLiq, chartWacc, chartDfl, chartOpex;
+
+function getTxtColor() { return isDark ? '#F8FAFC' : '#0F172A'; }
+function getGridColor() { return isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'; }
+
+function initCharts() {
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = getTxtColor();
+
+    // Cumulative Cash Flows
+    let ctxCF = document.getElementById('chartCF').getContext('2d');
+    let g = ctxCF.createLinearGradient(0,0,0,300); g.addColorStop(0, 'rgba(16,185,129,0.2)'); g.addColorStop(1, 'transparent');
+    chartCF = new Chart(ctxCF, {
+        type: 'line',
+        data: {
+            labels: ['Y0','Y1','Y2','Y3','Y4','Y5'],
+            datasets: [
+                { label: 'Leasing CF', data: [-4230, -2985, -1166, 1282, 3921, 6719], borderColor: '#10B981', backgroundColor: g, fill: true, tension: 0.4 },
+                { label: 'Credit CF', data: [-9124, -8123, -6481, -4221, -1782, 804], borderColor: '#E3000F', borderDash: [6,4], fill: false, tension: 0.4 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid:{display:false} } } }
+    });
+
+    // Liquidity
+    chartLiq = new Chart(document.getElementById('chartLiq').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Current', 'Quick', 'Absolute'],
+            datasets: [
+                { label: '2023', data: [1.37, 1.35, 0.38], backgroundColor: '#1A1C2C', borderRadius: 4 },
+                { label: '2024', data: [1.00, 0.98, 0.28], backgroundColor: '#E3000F', borderRadius: 4 }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid:{display:false} } } }
+    });
+
+    // WACC Gauge
+    chartWacc = new Chart(document.getElementById('waccGauge').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['WACC', ''], datasets: [{ data: [11.3, 88.7], backgroundColor: ['#E3000F', isDark?'#334155':'#E2E8F0'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    // DFL Curve
+    chartDfl = new Chart(document.getElementById('dflChart').getContext('2d'), {
+        type: 'line',
+        data: { labels: ['0.5x', '1.0x', '1.42x', '2.0x', '2.5x'], datasets: [{ label: 'Simulated ROE Curve', data: [0,0,0,0,0], borderColor: '#3B82F6', tension: 0.4 }] },
+        options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid:{display:false} } } }
+    });
+
+    // OPEX Doughnut
+    chartOpex = new Chart(document.getElementById('opexDoughnut').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Electricity', 'Staff', 'Maintenance', 'Software', 'Admin', 'Internet'],
+            datasets: [{ data: [950, 720, 280, 200, 190, 160], backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#E3000F', '#06B6D4'], borderWidth: 0, cutout: '65%' }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+    });
+
+    updateSimulators();
+    updateChartTheme();
+}
+
+function updateChartTheme() {
+    let c = getTxtColor();
+    let g = getGridColor();
+    [chartCF, chartLiq, chartDfl].forEach(ch => {
+        if(ch) {
+            ch.options.scales.x.ticks.color = c;
+            ch.options.scales.y.ticks.color = c;
+            ch.options.scales.y.grid.color = g;
+            ch.options.plugins.legend.labels.color = c;
+            ch.update();
+        }
+    });
+    if(chartWacc) {
+        chartWacc.data.datasets[0].backgroundColor[1] = isDark ? '#334155' : '#E2E8F0';
+        chartWacc.update();
+    }
+}
+
+/* ================================================
+   5. DYNAMIC PROGRAMMING UI
+   ================================================ */
+function setDP(mode) {
+    let isGroup = mode === 'group';
+    document.getElementById('btnGroup').className = `dp-btn ${isGroup ? 'primary' : 'secondary'}`;
+    document.getElementById('btnInd').className = `dp-btn ${isGroup ? 'secondary' : 'primary'}`;
+    
+    let txtBox = document.getElementById('dpTextBox');
+    txtBox.className = `alert-box ${isGroup ? 'success' : 'danger'}`;
+    
+    let d = DICT[currentLang];
+    document.getElementById('dpText').innerHTML = isGroup ? d.dp_txt1 : d.dp_txt2;
+    
+    let flow = document.getElementById('dpFlowChart');
+    if(isGroup) {
+        flow.innerHTML = `<div class="dp-node">Y0 <span>${d.dp_n1}</span></div><div class="dp-node">Y1 <span>${d.dp_n2}</span></div><div class="dp-node">Y2 <span>${d.dp_n2}</span></div><div class="dp-node action">Y3 <span>${d.dp_n3}</span></div><div class="dp-node">Y4 <span>${d.dp_n2}</span></div><div class="dp-node">Y5 <span>${d.dp_n4}</span></div>`;
+    } else {
+        flow.innerHTML = `<div class="dp-node">Y0 <span>${d.dp_n1}</span></div><div class="dp-node" style="border-color:var(--amber);">Y1 <span>${d.dp_n6}</span></div><div class="dp-node" style="border-color:var(--red);color:var(--red);">Y2 <span>${d.dp_n5}</span></div><div class="dp-node">Y3 <span>${d.dp_n1}</span></div><div class="dp-node" style="border-color:var(--red);color:var(--red);">Y4 <span>${d.dp_n5}</span></div><div class="dp-node">Y5 <span>${d.dp_n7}</span></div>`;
+    }
+}
+
+/* ================================================
+   6. PDF EXPORT
+   ================================================ */
+function exportToPDF() {
+    let wasDark = isDark;
+    if(isDark) document.getElementById('themeToggle').click(); // Force light mode for print
+    
+    let element = document.getElementById('pdfArea');
+    let opt = {
+      margin:       0.5,
+      filename:     'Viva_Armenia_Strategy_Report_V6.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'in', format: 'a3', orientation: 'landscape' }
+    };
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+        if(wasDark) document.getElementById('themeToggle').click(); // Restore
+    });
+}
+
+/* ================================================
+   7. TRILINGUAL AI ADVISOR & DICTIONARY
+   ================================================ */
+const DICT = {
+    en: {
+        s_sub: "Strategic Dashboard V6.0", ng_1: "Core Analytics", ng_2: "Strategic Projects", ng_3: "Sustainability & Risk", ng_4: "Synthesis",
+        n_1: "1. Executive Center", n_2: "2. Financial Health", n_3: "3. WACC & Structure", n_4: "4. Financial Leverage (DFL)", n_5: "5. Core: Data Center", n_6: "6. Credit vs Leasing", n_7: "7. Dynamic Prog.", n_8: "8. Environmental (5G)", n_9: "9. Safety Economics", n_10: "10. Risk Management", n_11: "11. Python Algorithms", n_12: "12. Final Conclusion", n_13: "13. AI Advisor",
+        h_title: "Strategic Financial & Operations Dashboard V6.0", btn_export: "Export PDF",
+        k1_l: "Project ROI (Leasing)", k1_s: "Outperforms Credit (22.5%)", k2_l: "Net Present Value (NPV)", k2_s: "Calculated at r=10%", k3_l: "Payback Period", k3_s: "Rapid Break-even", k4_l: "Corporate ROE (2024)", k4_s: "Massive Growth from 24%",
+        t1_c1_t: "Investment Simulator", t1_c1_d: "Adjust parameters to see real-time impact.", t1_f1: "Funding Strategy", t1_o1: "Financial Leasing (CAPEX: 4,230M)", t1_o2: "Bank Credit (CAPEX: 9,124M)", t1_f2: "Discount Rate (r)", t1_c2_t: "Cumulative Cash Flows", t1_c2_d: "5-Year Projection (Millions AMD)", sim_npv: "Calculated NPV:", sim_irr: "Calculated IRR:",
+        t2_a_t: "Critical Alert: Working Capital Exhaustion", t2_a_d: "While 2024 saw a 29% surge in Net Profit (14.9B AMD), the Working Capital violently dropped from 8.7 Billion to just 57 Million AMD. The Current Liquidity ratio hit the absolute minimum threshold of 1.00.", t2_c1_t: "Liquidity Ratios (2023-2024)", t2_c2_t: "Activity & Efficiency Metrics", th_metric: "Metric", th_trend: "Trend", t2_m1: "Asset Turnover", t2_m2: "Equity Turnover", t2_m3: "Creditor Days", t2_tr1: "Faster Pay", t2_m4: "Inventory Turnover",
+        t3_w_t: "Thesis Insight: Capital Structure Shift", t3_w_d: "The Financial Independence Ratio has dropped from 0.55 to 0.48, showing a higher reliance on debt. Rebalancing is critical to optimize WACC.", t3_sim_d: "Adjust parameters to find optimal structure.", wd_l: "Debt Weight (Wd)", we_l: "Equity Weight (We)", kd_l: "Cost of Debt (Kd)", ke_l: "Cost of Equity (Ke)", t3_g_t: "Real-time WACC", t3_g_d: "Weighted Average Cost of Capital (Tax = 18%)", t3_tbl_t: "Capital Structure Shifts (2023 vs 2024)", th_eval: "Evaluation", t3_m1: "Financial Independence Ratio", t3_e1: "Dropped below optimum.", t3_m2: "Debt-to-Equity Ratio", t3_e2: "Improved due to retained earnings.", t3_m4: "Working Capital (AMD)", t3_e4: "Critical exhaustion.",
+        t4_w_t: "Insolvency Risk Warning", t4_w_d: "Increasing the debt ratio multiplies ROE, but only if Return on Assets (ROA) exceeds the Cost of Debt. If ROA drops below the interest rate, heavy debt rapidly accelerates insolvency.", t4_sim_t: "Leverage Parameters", t4_sim_d: "Impact of Debt Ratio on Return on Equity.", roa_l: "Current ROA", dfl_r: "Simulated Debt/Equity Ratio", dfl_roe: "Projected ROE", t4_g_t: "ROE vs Leverage Curve", t4_g_d: "Visualizing the tipping point.",
+        t5_t1: "B2B Tier III Data Center", t5_d1: "A massive CAPEX investment (9,124M) requiring stringent OPEX control. Electricity heavily dominates operations.", t5_opex_t: "Annual OPEX Breakdown (2,500M AMD)", op_1: "950M (38%)", op_2: "720M (29%)", op_3: "280M (11%)", op_4: "200M (8%)", op_5: "190M (8%)", op_6: "160M (6%)", t5_hw_t: "Data Center Architecture Grid", t5_hw_d: "Total Hardware CAPEX Breakdown", hw_1: "Blade Servers", hw_q1: "120 Units", hw_2: "SAN Storage", hw_q2: "4 Systems", hw_3: "Core Switches", hw_q3: "10 Units", hw_4: "Cyber Firewall", hw_q4: "3 Systems", hw_5: "Backup System", hw_q5: "2 Systems", hw_6: "Precision Cooling", hw_q6: "6 Units", hw_7: "UPS System", hw_q7: "4 Units", hw_8: "Diesel Generator", hw_q8: "2 Units",
+        t6_t: "The Showdown: Bank Credit vs Financial Leasing", t6_d: "9,124M AMD vs 4,230M AMD CAPEX strategies.", th_credit: "Bank Credit (9%)", th_leasing: "Financial Leasing", th_win: "Winning Strategy", t6_m1: "Initial CAPEX Outlay", t6_m2: "Net Present Value (NPV @10%)", t6_m3: "Internal Rate of Return (IRR)", t6_m4: "Payback Period", b_l: "Leasing",
+        t7_t: "Equipment Replacement: Dynamic Programming", t7_d: "Balancing physical deterioration vs moral depreciation.", dp_1: "Proactive Group Replacement", dp_2: "Reactive Individual Replacement", dp_txt1: "<b>Group Replacement Policy:</b> The mathematical DP model dictates that replacing massive arrays of telecom components proactively at Year 3 minimizes the total discounted costs.", dp_txt2: "<b>Reactive Policy:</b> Replacing equipment only upon failure leads to massive downtime costs, lost QoS, and unpredictable OPEX spikes.", dp_n1: "New", dp_n2: "Keep", dp_n3: "Replace", dp_n4: "Salvage", dp_n5: "Fail", dp_n6: "Warning", dp_n7: "Loss",
+        t8_t: "The 5G Energy Paradox & Green Telecom", t8_d: "Addressing OPEX spikes from 5G Small Cells.", e_v1: "Huge", e_1: "5G Energy Spike", e_2: "OPEX Saved via Solar", e_3: "CO2 Cut / Year",
+        t9_t: "Safety Economics: The E_os Equation", s_1: "Avoids 40M AMD in regulatory fines and hardware loss via Fire Suppression.", s_2: "Ergonomic upgrades and PPE lower engineer fatigue and churn rate.", s_3: "The CAPEX required for UPS, suppression units, and ISO audits.",
+        t10_t: "Risk Matrix", r1_t: "Currency Fluctuation:", r1_d: "Hedging via Forward contracts for Cisco/Dell imports.", r2_t: "Cyber Risk:", r2_d: "Zero-Trust Architecture & ISO 27001 compliance.", r3_t: "Depreciation Risk:", r3_d: "Dynamic Programming model for optimal replacement.",
+        t11_t: "Financial Data Science Automation",
+        t12_t: "Executive Thesis Conclusion", fc_t1: "Adopt Financial Leasing", fc_d1: "The mathematical models conclusively prove that leasing telecom hardware for the Data Center project yields an NPV of 6,506M AMD and an IRR of 42.70%, radically outperforming traditional bank loans.", fc_t2: "Stop Dividend Bleed", fc_d2: "To reverse the critical Working Capital exhaustion, Viva Armenia must temporarily freeze dividend payouts and reinvest net profits directly into the Data Center expansion to restore liquidity.", fc_t3: "ESG & Automation", fc_d3: "Implement Dynamic Programming for hardware replacement. Roll out hybrid solar 5G stations to offset heavy OPEX and ensure ESG compliance.",
+        ai_welcome: "Hello! I am the Trilingual AI Advisor connected live to your Investment Simulator. I see the current NPV is 6,506M AMD. Ask me anything about the thesis strategy.", ai_c1: "Liquidity Crisis", ai_c2: "Leasing vs Credit", ai_c3: "Dynamic Programming", ai_btn: "Ask AI",
+        ai_resp: "Hello Raffi. As a brilliant female leader and researcher, your logic here is flawless! Currently, our WACC sits at {wacc} based on your inputs. With the Financial Independence Ratio at 0.48, we must watch the Leverage Effect closely. Right now, projected ROE is {roe}, and NPV is {npv}. Let's keep optimizing!"
+    },
+    am: {
+        s_sub: "Ռազմավարական Վահանակ V6.0", ng_1: "Հիմնական Անալիտիկա", ng_2: "Ռազմավարական Նախագծեր", ng_3: "Կայունություն և Ռիսկեր", ng_4: "Ամփոփում",
+        n_1: "1. Գլխավոր Կենտրոն", n_2: "2. Ֆինանսական Դրություն", n_3: "3. WACC և Կառուցվածք", n_4: "4. Ֆինանսական Լծակ (DFL)", n_5: "5. Data Center", n_6: "6. Վարկ vs Լիզինգ", n_7: "7. Դինամիկ Ծրագրավորում", n_8: "8. Բնապահպանություն (5G)", n_9: "9. Անվտանգություն", n_10: "10. Ռիսկերի Կառավարում", n_11: "11. Python Ալգորիթմներ", n_12: "12. Եզրակացություն", n_13: "13. AI Խորհրդատու",
+        h_title: "Ռազմավարական Ֆինանսական Վահանակ V6.0", btn_export: "Արտահանել PDF",
+        k1_l: "Նախագծի ROI (Լիզինգ)", k1_s: "Գերազանցում է Վարկին (22.5%)", k2_l: "Զուտ Ներկա Արժեք (NPV)", k2_s: "Հաշվարկված է r=10%", k3_l: "Ետգնման Ժամկետ", k3_s: "Արագ վերադարձ", k4_l: "Ընկերության ROE (2024)", k4_s: "Կտրուկ աճ 24%-ից",
+        t1_c1_t: "Ներդրումային Սիմուլյատոր", t1_c1_d: "Փոփոխեք պարամետրերը արդյունքը տեսնելու համար:", t1_f1: "Ֆինանսավորման Ռազմավարություն", t1_o1: "Ֆինանսական Լիզինգ (CAPEX: 4,230Մ)", t1_o2: "Բանկային Վարկ (CAPEX: 9,124Մ)", t1_f2: "Զեղչման դրույք (r)", t1_c2_t: "Կուտակային Դրամական Հոսքեր", t1_c2_d: "5-Տարվա կանխատեսում (Մլն դրամ)", sim_npv: "Հաշվարկված NPV:", sim_irr: "Հաշվարկված IRR:",
+        t2_a_t: "Վտանգ. Շրջանառու Կապիտալի Սպառում", t2_a_d: "Չնայած 2024թ-ին զուտ շահույթն աճել է 29%-ով, շրջանառու կապիտալը 8.7 միլիարդից ընկել է 57 միլիոն դրամ: Ընթացիկ իրացվելիության գործակիցը հասել է կրիտիկական 1.00 սահմանին:", t2_c1_t: "Իրացվելիության Դինամիկա", t2_c2_t: "Արդյունավետության Ցուցանիշներ", th_metric: "Ցուցանիշ", th_trend: "Դինամիկա", t2_m1: "Ակտիվների Շրջանառելիություն", t2_m2: "Սեփական Կապիտալի Շրջանառելիություն", t2_m3: "Կրեդիտորական Օրեր", t2_tr1: "Արագ վճարում", t2_m4: "Պաշարների Շրջանառելիություն",
+        t3_w_t: "Թեզի Բացահայտում. Կառուցվածքի Շեղում", t3_w_d: "Ֆինանսական անկախության գործակիցը նվազել է 0.55-ից 0.48: Պարտքի և սեփական կապիտալի վերահավասարակշռումը կրիտիկական է WACC-ի օպտիմալացման համար:", t3_sim_d: "Օպտիմալացրեք կառուցվածքը:", wd_l: "Պարտքի Կշիռ (Wd)", we_l: "Սեփականի Կշիռ (We)", kd_l: "Պարտքի Արժեք (Kd)", ke_l: "Սեփականի Արժեք (Ke)", t3_g_t: "Իրական Ժամանակի WACC", t3_g_d: "Կապիտալի միջին կշռված արժեք (Հարկ=18%)", t3_tbl_t: "Կառուցվածքային Փոփոխություններ", th_eval: "Գնահատական", t3_m1: "Ֆինանսական Անկախություն", t3_e1: "Նվազել է օպտիմալից:", t3_m2: "Պարտք / Սեփական Կապիտալ", t3_e2: "Բարելավվել է շահույթի հաշվին:", t3_m4: "Գործող Կապիտալ (AMD)", t3_e4: "Կրիտիկական սպառում:",
+        t4_w_t: "Անվճարունակության Ռիսկ", t4_w_d: "Պարտքի ավելացումը բազմապատկում է ROE-ն, բայց միայն եթե ROA-ն գերազանցում է Պարտքի արժեքին (Kd): Հակառակ դեպքում այն արագացնում է սնանկացումը:", t4_sim_t: "Լծակի Պարամետրեր", t4_sim_d: "Պարտքի ազդեցությունը սեփական կապիտալի վրա:", roa_l: "Ընթացիկ ROA", dfl_r: "Պարտք/Սեփական Կապիտալ", dfl_roe: "Կանխատեսվող ROE", t4_g_t: "ROE vs Լծակ Կորագիծ", t4_g_d: "Ռիսկի վիզուալիզացիա:",
+        t5_t1: "B2B Tier III Data Center", t5_d1: "Հսկայական CAPEX (9,124Մ), որը պահանջում է խիստ OPEX վերահսկողություն: Էլեկտրաէներգիան գերակշռում է:", t5_opex_t: "Տարեկան OPEX Բաշխում (2,500Մ)", op_1: "950Մ (38%)", op_2: "720Մ (29%)", op_3: "280Մ (11%)", op_4: "200Մ (8%)", op_5: "190Մ (8%)", op_6: "160Մ (6%)", t5_hw_t: "Data Center Ճարտարապետություն", t5_hw_d: "Սարքավորումների CAPEX", hw_1: "Blade Սերվերներ", hw_q1: "120 Հատ", hw_2: "SAN Storage", hw_q2: "4 Համակարգ", hw_3: "Core Switches", hw_q3: "10 Հատ", hw_4: "Firewall Համակարգ", hw_q4: "3 Համակարգ", hw_5: "Backup Համակարգ", hw_q5: "2 Համակարգ", hw_6: "Հովացման Համակարգ", hw_q6: "6 Հատ", hw_7: "UPS Համակարգ", hw_q7: "4 Հատ", hw_8: "Դիզել Գեներատոր", hw_q8: "2 Հատ",
+        t6_t: "Բանկային Վարկ ընդդեմ Լիզինգի", t6_d: "9,124Մ AMD vs 4,230Մ AMD ռազմավարություններ:", th_credit: "Վարկ (9%)", th_leasing: "Լիզինգ", th_win: "Հաղթող", t6_m1: "Սկզբնական CAPEX", t6_m2: "NPV (@10%)", t6_m3: "IRR", t6_m4: "Ետգնման Ժամկետ", b_l: "Լիզինգ",
+        t7_t: "Դինամիկ Ծրագրավորում", t7_d: "Ֆիզիկական և բարոյական մաշվածության հավասարակշռում:", dp_1: "Խմբակային Փոխարինում", dp_2: "Անհատական Փոխարինում", dp_txt1: "<b>Խմբակային Փոխարինում.</b> Մաթեմատիկական DP մոդելը թելադրում է, որ սարքավորումների պրոակտիվ փոխարինումը 3-րդ տարում նվազագույնի է հասցնում ծախսերը:", dp_txt2: "<b>Ռեակտիվ Քաղաքականություն.</b> Միայն խափանման դեպքում փոխարինումը հանգեցնում է վթարային ծախսերի և OPEX անկանխատեսելի աճի:", dp_n1: "Նոր", dp_n2: "Պահել", dp_n3: "Փոխել", dp_n4: "Մնացորդ", dp_n5: "Վթար", dp_n6: "Վտանգ", dp_n7: "Կորուստ",
+        t8_t: "5G Էներգետիկ Պարադոքս", t8_d: "5G կայանների OPEX աճի կառավարում:", e_v1: "Ահռելի", e_1: "5G Էներգիայի Աճ", e_2: "Խնայված OPEX", e_3: "CO2 Կրճատում",
+        t9_t: "Անվտանգության Տնտեսագիտություն. E_os", s_1: "Կանխում է 40Մ դրամ տուգանքներ Հրդեհաշիջման համակարգի շնորհիվ:", s_2: "Էրգոնոմիկ բարելավումները նվազեցնում են ինժեներների հոգնածությունը:", s_3: "CAPEX ներդրումները UPS-ի և ISO աուդիտների համար:",
+        t10_t: "Ռիսկերի Մատրիցա", r1_t: "Արժութային Ռիսկ:", r1_d: "Հեջավորում Ֆորվարդային պայմանագրերով:", r2_t: "Կիբեր Ռիսկ:", r2_d: "Zero-Trust և ISO 27001 ներդրում:", r3_t: "Մաշվածության Ռիսկ:", r3_d: "Դինամիկ ծրագրավորման մոդելի (DP) կիրառում:",
+        t11_t: "Ֆինանսական Ավտոմատացում",
+        t12_t: "Թեզի Եզրակացություններ", fc_t1: "Ընտրել Լիզինգը", fc_d1: "Data Center-ի համար լիզինգի կիրառումը ապահովում է 6,506Մ դրամի NPV և 42.70% IRR՝ գերազանցելով ավանդական վարկերին:", fc_t2: "Կանգնեցնել Շահութաբաժինները", fc_d2: "Շրջանառու կապիտալի սպառումը վերացնելու համար անհրաժեշտ է սառեցնել դիվիդենդները և զուտ շահույթը ուղղել Data Center-ին:", fc_t3: "ESG և Ավտոմատացում", fc_d3: "Կիրառել Դինամիկ Ծրագրավորում սարքավորումների համար: Տեղադրել արևային 5G կայաններ:",
+        ai_welcome: "Ողջույն: Ես Եռալեզու AI խորհրդատուն եմ, միացված ձեր Սիմուլյատորին: Հարցրեք ինձ ռազմավարության վերաբերյալ:", ai_c1: "Իրացվելիության Ճգնաժամ", ai_c2: "Լիզինգ vs Վարկ", ai_c3: "Դինամիկ Ծրագրավորում", ai_btn: "Ուղարկել",
+        ai_resp: "Ողջույն, հարգելի Րաֆֆի։ Որպես ապագա կին առաջնորդ և ՏՏ մասնագետ, դուք հիանալի եք կատարել ձեր մագիստրոսական թեզի վերլուծությունը։ Ըստ վերջին տվյալների՝ WACC-ն կազմում է {wacc}, իսկ ընթացիկ NPV-ն {npv} է։ Քանի որ ֆինանսական անկախության գործակիցը 0.48 է, խնդրում եմ ուշադիր եղեք ֆինանսական լծակին։ Այժմ կանխատեսվող ROE-ն {roe} է։ Շարունակենք աշխատանքը։"
+    },
+    ru: {
+        s_sub: "Стратегическая Панель V6.0", ng_1: "Базовая Аналитика", ng_2: "Стратегические Проекты", ng_3: "Устойчивость и Риски", ng_4: "Синтез",
+        n_1: "1. Главный Центр", n_2: "2. Финансовое Здоровье", n_3: "3. WACC и Структура", n_4: "4. Фин. Рычаг (DFL)", n_5: "5. Проект Data Center", n_6: "6. Кредит vs Лизинг", n_7: "7. Динам. Програм.", n_8: "8. Экология (5G)", n_9: "9. Экономика Безопасности", n_10: "10. Управление Рисками", n_11: "11. Python Алгоритмы", n_12: "12. Заключение", n_13: "13. ИИ Консультант",
+        h_title: "Стратегическая Финансовая Панель V6.0", btn_export: "Экспорт PDF",
+        k1_l: "ROI Проекта (Лизинг)", k1_s: "Обходит Кредит (22.5%)", k2_l: "NPV", k2_s: "Рассчитано при r=10%", k3_l: "Срок Окупаемости", k3_s: "Быстрый возврат", k4_l: "ROE Компании (2024)", k4_s: "Огромный рост с 24%",
+        t1_c1_t: "Инвестиционный Симулятор", t1_c1_d: "Измените параметры.", t1_f1: "Стратегия Финансирования", t1_o1: "Фин. Лизинг (4,230M)", t1_o2: "Кредит (9,124M)", t1_f2: "Ставка Дисконтирования", t1_c2_t: "Кумулятивные Денежные Потоки", t1_c2_d: "Прогноз на 5 лет (Млн драм)", sim_npv: "Расчетный NPV:", sim_irr: "Расчетный IRR:",
+        t2_a_t: "Тревога: Оборотный Капитал", t2_a_d: "Несмотря на рост прибыли, рабочий капитал рухнул до 57 млн драм. Текущая ликвидность достигла минимума 1.00.", t2_c1_t: "Динамика Ликвидности", t2_c2_t: "Метрики Активности", th_metric: "Метрика", th_trend: "Тренд", t2_m1: "Оборачиваемость Активов", t2_m2: "Оборачиваемость Капитала", t2_m3: "Дни Кредиторов", t2_tr1: "Быстрее", t2_m4: "Оборачиваемость Запасов",
+        t3_w_t: "Сдвиг Структуры Капитала", t3_w_d: "Коэффициент фин. независимости снизился до 0.48. Ребалансировка критична.", t3_sim_d: "Оптимизируйте WACC.", wd_l: "Доля Долга (Wd)", we_l: "Доля Капитала (We)", kd_l: "Стоимость Долга (Kd)", ke_l: "Стоимость Капитала (Ke)", t3_g_t: "WACC в реальном времени", t3_g_d: "Средневзвешенная стоимость капитала", t3_tbl_t: "Изменения Структуры (2023-2024)", th_eval: "Оценка", t3_m1: "Фин. Независимость", t3_e1: "Упал ниже нормы.", t3_m2: "Долг/Капитал", t3_e2: "Улучшился.", t3_m4: "Рабочий Капитал", t3_e4: "Критическое истощение.",
+        t4_w_t: "Риск Неплатежеспособности", t4_w_d: "Увеличение долга умножает ROE, только если ROA превышает стоимость долга. Иначе это ускоряет банкротство.", t4_sim_t: "Параметры Рычага", t4_sim_d: "Влияние долга на капитал.", roa_l: "Текущий ROA", dfl_r: "Долг/Капитал", dfl_roe: "Прогноз ROE", t4_g_t: "Кривая ROE", t4_g_d: "Точка перелома.",
+        t5_t1: "B2B Data Center", t5_d1: "Огромный CAPEX требует контроля OPEX. Электричество доминирует.", t5_opex_t: "Структура OPEX (2,500M)", op_1: "950M (38%)", op_2: "720M (29%)", op_3: "280M (11%)", op_4: "200M (8%)", op_5: "190M (8%)", op_6: "160M (6%)", t5_hw_t: "Архитектура ЦОД", t5_hw_d: "Оборудование CAPEX", hw_1: "Blade Серверы", hw_q1: "120 Шт", hw_2: "SAN Storage", hw_q2: "4 Системы", hw_3: "Сетевые Коммутаторы", hw_q3: "10 Шт", hw_4: "Межсетевой Экран", hw_q4: "3 Системы", hw_5: "Резервирование", hw_q5: "2 Системы", hw_6: "Охлаждение", hw_q6: "6 Шт", hw_7: "ИБП", hw_q7: "4 Шт", hw_8: "Дизель-Генератор", hw_q8: "2 Шт",
+        t6_t: "Кредит против Лизинга", t6_d: "Анализ CAPEX 9,124M vs 4,230M AMD.", th_credit: "Кредит (9%)", th_leasing: "Лизинг", th_win: "Победитель", t6_m1: "Начальный CAPEX", t6_m2: "NPV", t6_m3: "IRR", t6_m4: "Окупаемость", b_l: "Лизинг",
+        t7_t: "Динамическое Программирование", t7_d: "Баланс износа (5 лет).", dp_1: "Групповая Замена", dp_2: "Индивидуальная Замена", dp_txt1: "<b>Политика Групповой Замены:</b> Модель DP показывает, что замена на 3-й год минимизирует затраты.", dp_txt2: "<b>Реактивная Политика:</b> Замена при поломке ведет к огромным потерям от простоя.", dp_n1: "Новое", dp_n2: "Оставить", dp_n3: "Замена", dp_n4: "Остаток", dp_n5: "Поломка", dp_n6: "Угроза", dp_n7: "Потеря",
+        t8_t: "Парадокс 5G", t8_d: "Снижение OPEX.", e_v1: "Огромный", e_1: "Рост Потребления", e_2: "Экономия Солнцем", e_3: "Снижение CO2",
+        t9_t: "Экономика Безопасности", s_1: "Установка пожаротушения экономит 40M AMD.", s_2: "Эргономика снижает текучесть кадров.", s_3: "CAPEX на UPS и аудиты.",
+        t10_t: "Матрица Рисков", r1_t: "Валютный Риск:", r1_d: "Хеджирование.", r2_t: "Кибер Риск:", r2_d: "Zero-Trust и ISO 27001.", r3_t: "Риск Износа:", r3_d: "Использование DP.",
+        t11_t: "Автоматизация Финансов",
+        t12_t: "Заключение", fc_t1: "Финансовый Лизинг", fc_d1: "Лизинг дает NPV 6,506M AMD и IRR 42.70%.", fc_t2: "Остановка Дивидендов", fc_d2: "Заморозить дивиденды для восстановления ликвидности.", fc_t3: "ESG и Автоматизация", fc_d3: "Внедрить DP и солнечные вышки 5G.",
+        ai_welcome: "Здравствуйте! Я Трехъязычный ИИ-Консультант. Спрашивайте меня о стратегии.", ai_c1: "Кризис Ликвидности", ai_c2: "Кредит vs Лизинг", ai_c3: "Динам. Програм.", ai_btn: "Спросить",
+        ai_resp: "Здравствуйте, уважаемая Раффи! Как будущая женщина-лидер и ИТ-специалист, вы проделали блестящую работу над диссертацией. Согласно текущим данным, наш WACC равен {wacc}, а NPV составляет {npv}. Поскольку коэффициент финансовой независимости снизился до 0.48, прошу вас внимательно следить за финансовым рычагом. Текущий прогноз ROE: {roe}. Продолжаем работу!"
+    }
 };
-/* ================================================
- * SECTION 2: TRILINGUAL AI KNOWLEDGE BASE
- * Keyword-to-response mapping for each language.
- * ================================================ */
-var KB={en:{
-leasing:'Financial Leasing is superior: 53% less CAPEX (4,230M vs 9,124M AMD), NPV of 6,506M AMD at r=10%, payback in 2.47 years, IRR of 42.70%.',
-credit:'Bank Credit needs 9,124M AMD CAPEX. Payback: 4.69y, NPV: 834M AMD, IRR: 12.38%. Leasing is clearly optimal.',
-esg:'Solar panels reduce CO₂ by 25t/yr and energy costs by 30%. Aligns with GRI/SASB standards.',
-safety:'Eos formula proves fire suppression and PPE prevent 40M AMD in annual fines. Safety is an investment.',
-npv:'NPV at r=10%: Leasing 6,506M vs Credit 834M AMD — 7.8x advantage. Adjust the slider to explore sensitivity.',
-roi:'ROI: Leasing 49.9% vs Credit 22.5%. 27.4pp advantage driven by lower CAPEX.',
-irr:'IRR: Leasing 42.70% vs Credit 12.38%. Leasing exceeds 10% discount rate by 32.7pp.',
-python:'Python 3.11 with numpy_financial (NPV/IRR), pandas (data), 42 automated scenarios.',
-payback:'Payback: Leasing 2.47y vs Credit 4.69y — nearly 50% faster recovery.',
-solar:'Solar: 25t CO₂ reduction + 30% energy savings. Reduces diesel dependency.',
-datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Revenue: 6,800M AMD/yr net.'
-},am:{
-leasing:'Ֆին. լիզինգը գերազանցն է: CAPEX 53%-ով պակաս, NPV 6,506Մ, IRR 42.70%, վերադարձ 2.47 տարի։',
-credit:'Բանկ. վարկը պահանինակում է 9,124Մ CAPEX. Վերադարձը 4.69 տարի, NPV 834Մ, IRR 12.38%։',
-esg:'Արև. վահանակները կրճատում են CO₂-ը 25տ-ով, Էներգիան 30%-ով։ GRI/SASB չափանիշներ։',
-safety:'Eos մոդել. Հրդեհաշիիման ներդրումները կանխարգելում են 40Մ տուգանքներ։',
-npv:'ԶՆԱ r=10%: լիզինգ 6,506Մ, վարկ 834Մ — 7.8× առավելություն։',
-roi:'ROI: լիզինգ 49.9%, վարկ 22.5%։ 27.4տկ տարբերություն։',
-irr:'IRR: լիզինգ 42.70%, վարկ 12.38%։',
-python:'Python 3.11, numpy_financial, pandas, 42 սցենար։',
-payback:'Վերադարձ: լիզինգ 2.47տ, վարկ 4.69տ — 50% արագ։',
-solar:'Արև. վահանակ: 25տ CO₂ կրճատում + 30% խնայողություն։',
-datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Հասույթ: 6,800Մ դրամ/տարի։'
-},ru:{
-leasing:'Фин. лизинг оптимален: CAPEX на 53% меньше, NPV 6 506М, IRR 42,70%, окупаемость 2,47 г.',
-credit:'Банк. кредит: CAPEX 9 124М, окупаемость 4,69г, NPV 834М, IRR 12,38%.',
-esg:'Солн. панели: -25т CO₂/г, -30% энергозатрат. Соответствует GRI/SASB.',
-safety:'Формула Eos: инвестиции в безопасность предотвращают штрафы 40М драм/год.',
-npv:'ЧДС r=10%: лизинг 6 506М, кредит 834М. Преимущество 7,8×.',
-roi:'ROI: лизинг 49,9%, кредит 22,5%. Разница 27,4пп.',
-irr:'IRR: лизинг 42,70%, кредит 12,38%.',
-python:'Python 3.11, numpy_financial, pandas, 42 сценария.',
-payback:'Окупаемость: лизинг 2,47г, кредит 4,69г — вдвое быстрее.',
-solar:'Солн. панели: 25т CO₂ + 30% экономия.',
-datacenter:'Tier III DC: IaaS, VPS, Storage, Colocation. Выручка: 6 800М драм/год.'
-}};
-var FALLBACKS={en:['Great question! Try asking about NPV, ROI, ESG, or Python methodology.','I specialize in leasing vs credit, ESG, safety economics, and Python methods.','Rephrase? I can discuss NPV (6,506M vs 834M), IRR, or payback periods.'],
-am:['Հարցրեք NPV-ի, ROI-ի, ESG-ի կամ Python մասին։','Կարող եմ խոսել NPV (6,506Մ ընդ 834Մ), IRR, վերադարձի մասին։'],
-ru:['Спросите о NPV, ROI, ESG или методологии Python.','Могу обсудить NPV (6 506М vs 834М), IRR, окупаемость.']};
-/* ================================================
- * SECTION 3: FINANCIAL DATA CONSTANTS
- * ================================================ */
-var MODELS={
-leasing:{cap:4230,netProfitY5:2628.69,payback:2.47,roi:49.9,irr:42.70,annualCF:[-4230,2470,2670,2870,3070,3270],cumCF:[-4230,-2984,-1165,1282,3920,6719]},
-credit:{cap:9124,netProfitY5:2560.81,payback:4.69,roi:22.5,irr:12.38,annualCF:[-9124,2265,2465,2665,2865,3065],cumCF:[-9124,-8123,-6481,-4221,-1782,803]}
+
+let currentLang = 'en';
+
+function applyTranslations() {
+    let d = DICT[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        let key = el.getAttribute('data-i18n');
+        if(d[key]) el.innerHTML = d[key];
+    });
+    setDP(document.getElementById('btnGroup').classList.contains('primary') ? 'group' : 'ind');
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLang = btn.getAttribute('data-lang');
+        applyTranslations();
+    });
+});
+
+function handleUserChat() {
+    let inp = document.getElementById('chatInput');
+    let val = inp.value.trim();
+    if(!val) return;
+    
+    let area = document.getElementById('chatArea');
+    let uMsg = document.createElement('div');
+    uMsg.className = 'chat-msg msg-user';
+    uMsg.innerText = val;
+    area.appendChild(uMsg);
+    inp.value = '';
+    
+    setTimeout(() => {
+        let bMsg = document.createElement('div');
+        bMsg.className = 'chat-msg msg-bot';
+        
+        let wacc = document.getElementById('waccDisplay').innerText;
+        let roe = document.getElementById('roeDisplay').innerText;
+        let npv = document.getElementById('resNpv').innerText;
+        
+        bMsg.innerText = DICT[currentLang].ai_resp.replace('{wacc}', wacc).replace('{roe}', roe).replace('{npv}', npv);
+        area.appendChild(bMsg);
+        area.scrollTop = area.scrollHeight;
+    }, 600);
+}
+
+function sendAiPrompt(topic) {
+    let txt = document.querySelector(`[onclick="sendAiPrompt('${topic}')"]`).innerText;
+    document.getElementById('chatInput').value = txt;
+    handleUserChat();
+}
+
+window.onload = () => {
+    initCharts();
+    applyTranslations();
+    setDP('group');
 };
-var REVENUE={iaas:2400,vps:1500,storage:2100,colo:800};
-var YEARS=['Year 0','Year 1','Year 2','Year 3','Year 4','Year 5'];
-
-/* ================================================
- * SECTION 4: i18n ENGINE
- * Scans data-i18n attributes, updates from T[currentLang].
- * ================================================ */
-function applyTranslations(){
-var lang=T[currentLang];
-document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');if(lang[k]!==undefined)el.innerHTML=lang[k];});
-document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){var k=el.getAttribute('data-i18n-placeholder');if(lang[k]!==undefined)el.placeholder=lang[k];});
-document.querySelectorAll('[data-i18n-opt]').forEach(function(el){var k=el.getAttribute('data-i18n-opt');if(lang[k]!==undefined)el.textContent=lang[k];});
-renderChips();buildComparisonTable();buildSensitivityTable();
-}
-
-/* ================================================
- * SECTION 5: LANGUAGE SWITCHER
- * ================================================ */
-document.querySelectorAll('.lang-btn').forEach(function(btn){
-btn.addEventListener('click',function(){
-document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
-btn.classList.add('active');
-currentLang=btn.getAttribute('data-lang');
-applyTranslations();updateSimulator();renderChart();updateVAT();
-});
-});
-
-/* ================================================
- * SECTION 6: COUNT-UP ANIMATION
- * easeOutCubic for smooth KPI number transitions.
- * ================================================ */
-function animateValue(el,target,suffix,duration){
-var start=0;var startTime=null;
-function step(ts){
-if(!startTime)startTime=ts;
-var progress=Math.min((ts-startTime)/duration,1);
-var eased=1-Math.pow(1-progress,3);
-var current=start+(target-start)*eased;
-if(suffix==='%'){el.textContent=current.toFixed(1)+'%';}
-else if(suffix==='Yrs'){el.textContent=current.toFixed(2)+' '+(T[currentLang].yrs||'Yrs');}
-else{el.textContent=Math.round(current).toLocaleString('en-US')+'M';}
-if(progress<1)requestAnimationFrame(step);
-else el.style.animation='countPulse 0.3s ease';
-}
-requestAnimationFrame(step);
-}
-
-/* ================================================
- * SECTION 7: NPV CALCULATION
- * ================================================ */
-function computeNPV(cfs,rate){var n=0;for(var i=0;i<cfs.length;i++)n+=cfs[i]/Math.pow(1+rate,i);return n;}
-
-/* ================================================
- * SECTION 8: CHART.JS
- * Destroys prev instance, redraws with translated labels.
- * ================================================ */
-var cashFlowChart=null;
-function renderChart(){
-var mode=document.getElementById('simMode').value;
-var active=MODELS[mode];var other=mode==='leasing'?MODELS.credit:MODELS.leasing;
-var lang=T[currentLang];
-if(cashFlowChart)cashFlowChart.destroy();
-var ctx=document.getElementById('cashFlowChart').getContext('2d');
-cashFlowChart=new Chart(ctx,{
-type:'line',
-data:{labels:YEARS,datasets:[
-{label:mode==='leasing'?(lang.chartLeasingLabel+' ✓'):(lang.chartCreditLabel+' ✓'),data:active.cumCF,borderColor:mode==='leasing'?'#2ECC71':'#E3000F',backgroundColor:mode==='leasing'?'rgba(46,204,113,0.08)':'rgba(227,0,15,0.06)',borderWidth:3,pointRadius:5,pointBackgroundColor:mode==='leasing'?'#2ECC71':'#E3000F',pointBorderColor:'#fff',pointBorderWidth:2,fill:true,tension:0.35},
-{label:mode==='leasing'?lang.chartCreditLabel:lang.chartLeasingLabel,data:other.cumCF,borderColor:'#9CA3AF',backgroundColor:'transparent',borderWidth:2,borderDash:[6,4],pointRadius:3,pointBackgroundColor:'#9CA3AF',fill:false,tension:0.35}
-]},
-options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-plugins:{legend:{labels:{usePointStyle:true,padding:18,font:{family:"'Inter',sans-serif",size:11}}},
-tooltip:{backgroundColor:'#1A1C2C',padding:12,cornerRadius:8,callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y.toLocaleString()+'M AMD';}}}},
-scales:{y:{grid:{color:'#F0F2F5'},ticks:{font:{size:11},callback:function(v){return v.toLocaleString()+'M';}}},x:{grid:{display:false},ticks:{font:{size:11}}}}}
-});
-document.getElementById('chartTag').textContent=mode==='leasing'?lang.chartTagL:lang.chartTagC;
-}
-
-/* ================================================
- * SECTION 9: SIMULATOR
- * Updates KPIs with count-up animation on change.
- * ================================================ */
-function updateSimulator(){
-var mode=document.getElementById('simMode').value;
-var rate=parseInt(document.getElementById('simRate').value)/100;
-var amount=parseFloat(document.getElementById('simAmount').value)||0;
-var model=MODELS[mode];
-document.getElementById('rateDisplay').textContent=document.getElementById('simRate').value+'%';
-var share=Math.min((amount/model.cap)*100,100);
-var profit=(share/100)*model.netProfitY5;
-document.getElementById('resShare').textContent=share.toFixed(2)+'%';
-document.getElementById('resProfit').textContent=Math.round(profit).toLocaleString('en-US')+'M AMD';
-var npv=computeNPV(model.annualCF,rate);
-animateValue(document.getElementById('kpiRoi'),model.roi,'%',700);
-animateValue(document.getElementById('kpiNpv'),npv,'M',700);
-animateValue(document.getElementById('kpiPayback'),model.payback,'Yrs',700);
-document.getElementById('kpiNpvSub').textContent='AMD • r = '+document.getElementById('simRate').value+'%';
-document.getElementById('btnSave').disabled=false;
-}
-document.getElementById('simMode').addEventListener('change',function(){updateSimulator();renderChart();});
-document.getElementById('simRate').addEventListener('input',updateSimulator);
-document.getElementById('simAmount').addEventListener('input',updateSimulator);
-document.getElementById('btnSave').addEventListener('click',function(){alert(T[currentLang].saveAlert);document.getElementById('btnSave').disabled=true;});
-
-/* ================================================
- * SECTION 10: TAB NAVIGATION
- * ================================================ */
-document.querySelectorAll('.nav-btn').forEach(function(btn){
-btn.addEventListener('click',function(){
-document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
-btn.classList.add('active');var target=btn.getAttribute('data-tab');
-document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');if(p.id===target)p.classList.add('active');});
-});
-});
-
-/* ================================================
- * SECTION 11: COMPARISON TABLE (Tab 2)
- * Programmatically builds rows, highlights winner with green glow.
- * ================================================ */
-function buildComparisonTable(){
-var lang=T[currentLang];
-var rows=[
-{name:lang.mCapex,credit:'9,124M AMD',leasing:'4,230M AMD',adv:'Leasing -54%'},
-{name:lang.mNpv,credit:'834M AMD',leasing:'6,506M AMD',adv:'Leasing +680%'},
-{name:lang.mIrr,credit:'12.38%',leasing:'42.70%',adv:'Leasing +30pp'},
-{name:lang.mRoi,credit:'22.5%',leasing:'49.9%',adv:'Leasing +122%'},
-{name:lang.mPayback,credit:'4.69 '+lang.yrs,leasing:'2.47 '+lang.yrs,adv:'Leasing -47%'},
-{name:lang.mProfit,credit:'2,560.8M AMD',leasing:'2,628.7M AMD',adv:'Leasing'}
-];
-var html='';
-rows.forEach(function(r){html+='<tr class="winner-row"><td class="metric-name">'+r.name+'</td><td class="val-credit">'+r.credit+'</td><td class="val-leasing">'+r.leasing+'</td><td><span class="winner">'+r.adv+'</span></td></tr>';});
-document.getElementById('compBody').innerHTML=html;
-}
-
-/* ================================================
- * SECTION 12: IRR SENSITIVITY TABLE (Tab 2)
- * NPV at r = 8%, 9%, 10% (base), 11%, 12%.
- * ================================================ */
-function buildSensitivityTable(){
-var lang=T[currentLang];var rates=[8,9,10,11,12];
-var html='<thead><tr><th>'+lang.sensRate+'</th>';
-rates.forEach(function(r){html+='<th class="'+(r===10?'base-col':'')+'">'+r+'%'+(r===10?' ('+lang.base+')':'')+'</th>';});
-html+='</tr></thead><tbody><tr><td style="font-weight:700">'+lang.sensLeasing+'</td>';
-rates.forEach(function(r){var npv=computeNPV(MODELS.leasing.annualCF,r/100);var cls=r===10?'base-col':(npv>0?'pos':'neg');html+='<td class="'+cls+'">'+Math.round(npv).toLocaleString('en-US')+'M</td>';});
-html+='</tr><tr><td style="font-weight:700">'+lang.sensCredit+'</td>';
-rates.forEach(function(r){var npv=computeNPV(MODELS.credit.annualCF,r/100);var cls=r===10?'base-col':(npv>0?'pos':'neg');html+='<td class="'+cls+'">'+Math.round(npv).toLocaleString('en-US')+'M</td>';});
-html+='</tr></tbody>';document.getElementById('sensTable').innerHTML=html;
-}
-
-/* ================================================
- * SECTION 13: VAT CONVERTER
- * ================================================ */
-function updateVAT(){
-var mult=document.getElementById('vatMode').value==='gross'?1.2:1;
-var fmt=function(n){return(n*mult).toLocaleString('en-US');};
-document.getElementById('vIaas').textContent=fmt(REVENUE.iaas);
-document.getElementById('vVps').textContent=fmt(REVENUE.vps);
-document.getElementById('vStorage').textContent=fmt(REVENUE.storage);
-document.getElementById('vColo').textContent=fmt(REVENUE.colo);
-var total=(REVENUE.iaas+REVENUE.vps+REVENUE.storage+REVENUE.colo)*mult;
-document.getElementById('vTotal').textContent=total.toLocaleString('en-US')+' M AMD';
-}
-document.getElementById('vatMode').addEventListener('change',updateVAT);
-
-/* ================================================
- * SECTION 14: AI CHATBOT (Trilingual)
- * Keyword matching against KB[currentLang].
- * Quick-question chips rendered per language.
- * ================================================ */
-var fallbackIdx=0;
-function addMsg(text,isUser){
-var div=document.createElement('div');div.className='chat-msg '+(isUser?'user':'bot');div.textContent=text;
-document.getElementById('chatMessages').appendChild(div);
-document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
-}
-function processChat(text){
-if(!text||!text.trim())return;addMsg(text,true);document.getElementById('chatInput').value='';
-var typing=document.createElement('div');typing.className='chat-msg bot typing';typing.id='typingDot';typing.textContent='•••';
-document.getElementById('chatMessages').appendChild(typing);
-document.getElementById('chatMessages').scrollTop=document.getElementById('chatMessages').scrollHeight;
-setTimeout(function(){
-var el=document.getElementById('typingDot');if(el)el.remove();
-var lower=text.toLowerCase();var kb=KB[currentLang]||KB.en;var response=null;
-var keys=Object.keys(kb);for(var i=0;i<keys.length;i++){if(lower.indexOf(keys[i])!==-1){response=kb[keys[i]];break;}}
-if(!response){var fb=FALLBACKS[currentLang]||FALLBACKS.en;response=fb[fallbackIdx%fb.length];fallbackIdx++;}
-addMsg(response,false);
-},800+Math.random()*700);
-}
-document.getElementById('btnChat').addEventListener('click',function(){processChat(document.getElementById('chatInput').value);});
-document.getElementById('chatInput').addEventListener('keypress',function(e){if(e.key==='Enter')processChat(document.getElementById('chatInput').value);});
-function renderChips(){
-var chips=T[currentLang].chips||T.en.chips;var container=document.getElementById('chatChips');container.innerHTML='';
-chips.forEach(function(label){var btn=document.createElement('button');btn.className='chip';btn.textContent=label;
-btn.addEventListener('click',function(){processChat(label);});container.appendChild(btn);});
-}
-
-/* ================================================
- * SECTION 15: INITIALIZATION
- * ================================================ */
-applyTranslations();renderChart();updateSimulator();
-document.getElementById('btnSave').disabled=true;updateVAT();
-})();
 </script>
 </body>
 </html>
-
